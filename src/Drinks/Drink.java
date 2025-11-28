@@ -10,4 +10,17 @@ public class Drink {
         this.size = size;
     }
 
+    public double getPrice() {
+        double basePrice = type.getPrice();
+        double multiplier = size.getPriceMultiplier();
+        return basePrice * multiplier;
+    }
+
+    public int getCalorie() {
+        double baseCalorie = type.getCalories();
+        double multiplier = size.getCalorieMultiplier();
+        return (int) (baseCalorie * multiplier);
+    }
+
+
 }

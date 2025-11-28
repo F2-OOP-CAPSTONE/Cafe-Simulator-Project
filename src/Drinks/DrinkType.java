@@ -1,16 +1,17 @@
 package Drinks;
 
 public enum DrinkType {
-    LATTE("Latte", 150.00, 135.00),
-    AMERICANO("Americano", 135.00, 10.00),
-    CAPPUCCINO("Cappuccino", 145.00, 150.00),
-    MOCHA("Mocha", 190.00, 349.00);
+    LATTE("Latte", 150.00, 135),
+    AMERICANO("Americano", 135.00, 10),
+    CAPPUCCINO("Cappuccino", 145.00, 150),
+    MOCHA("Mocha", 190.00, 349),
+    COFFEEofSADNESSandGRIEF("Coffee of all Sadness and Grief", 0, 10000000);
 
     private final String name;
     private final double price;
-    private final double calories;
+    private final int calories;
 
-    DrinkType(String name, Double price, Double calories){
+    DrinkType(String name, double price, int calories){
         this.name = name;
         this.price = price;
         this.calories = calories;
