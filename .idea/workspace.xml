@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a2d9466c-79b9-4a58-b108-e1bd27ec7eeb" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/UI/UI.form" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/UI/UI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.java" beforeDir="false" />
     </list>
