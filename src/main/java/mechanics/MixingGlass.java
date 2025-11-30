@@ -1,5 +1,10 @@
+package Mechanics;
 
-import java.model.Drink;
+import Drinks.Drink;
+import Drinks.DrinkSize;
+import Drinks.DrinkType;
+import Drinks.Ingredients;
+
 import java.util.ArrayList;
 import java.util.List;
 public class MixingGlass {
@@ -17,5 +22,4 @@ public class MixingGlass {
         currentIngredients.clear();
         return finalDrink;
     }
-    
 }
