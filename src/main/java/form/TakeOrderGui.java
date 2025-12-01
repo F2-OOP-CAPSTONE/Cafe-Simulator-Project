@@ -47,17 +47,25 @@ public class TakeOrderGui extends JFrame{
                             price += 130;
                             break;
                     }
+
+                    String order = "1x " + SizeBtnGroup.getSelection().getActionCommand() + " " + DrinksGroup.getSelection().getActionCommand();
+
                     System.out.print("1x " + size + " " + drink);
                     if(extraShotCheckBox.isSelected()){
                         System.out.print(" + Extra Shot");
                         price += 20;
+                        order = order + " + Extra Shot";
                     }
                     if(syrupCheckBox.isSelected()){
                         System.out.print(" + Syrup");
                         price += 15;
+                        order = order + " + Syrup";
                     }
                     System.out.println(" ");
                     System.out.println("Total: " + price);
+
+                    OrderSummaryGui orderGui = new OrderSummaryGui(order, price);
+                    orderGui.setVisible(true);
                 }else{
                     System.out.println("Please pick drink and size");
                 }
