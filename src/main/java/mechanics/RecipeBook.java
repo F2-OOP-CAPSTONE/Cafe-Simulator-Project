@@ -1,4 +1,9 @@
-import java.util.DrinkType;
+package Mechanics;
+
+import Drinks.DrinkType;
+import Drinks.Ingredients;
+
+import java.util.List;
 
 public class RecipeBook {
     public static DrinkType identify(List<Ingredients> ingredients) {

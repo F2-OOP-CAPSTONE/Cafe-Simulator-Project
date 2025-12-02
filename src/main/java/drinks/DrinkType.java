@@ -1,5 +1,6 @@
-public enum DrinkType {
+package Drinks;
 
+public enum DrinkType {
     LATTE("Latte", 150.00, 135),
     AMERICANO("Americano", 135.00, 10),
     CAPPUCCINO("Cappuccino", 145.00, 150),
@@ -15,6 +16,7 @@ public enum DrinkType {
         this.price = price;
         this.calories = calories;
     }
+
     public String getName() { return name; }
     public double getPrice() { return  price; }
     public  double getCalories() { return  calories; }
