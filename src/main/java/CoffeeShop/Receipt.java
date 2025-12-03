@@ -8,7 +8,7 @@ public class Receipt {
         Drink drink = order.getServedDrink();
 
         sb.append("========== RECEPIT ==========\n");
-        sb.append("Order ID: #").append(order(order.getID()).append("\n");
+        sb.append("Order ID: #").append(order.getID()).append("\n");
         sb.append("Customer: ").append(order.getCustomer().getName()).append("\n");
         sb.append("-----------------------------\n");
 

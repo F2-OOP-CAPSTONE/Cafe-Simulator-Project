@@ -22,5 +22,12 @@ public class Drink {
         return (int) (baseCalorie * multiplier);
     }
 
+    public String getName() {
+        return type.getName();
+    }
+
+    public String getFullName() {
+        return size.toString() + " " + type.getName();
+    }
 
 }

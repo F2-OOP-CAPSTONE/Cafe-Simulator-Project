@@ -17,9 +17,10 @@ public class Barista {
         // Check if customer is happy
         String wanted = order.getDrinkName();
         String got = drink.getName();
+        int tip  = 0;
 
         if(wanted.equalsIgnoreCase(got)) {
-            int tip = order.getCustomer().reactToDrink(drink);
+            tip = order.getCustomer().reactToDrink(drink);
         }
 
         if (tip > 0) {

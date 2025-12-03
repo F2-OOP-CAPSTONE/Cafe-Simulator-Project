@@ -20,7 +20,7 @@ public class Order {
     // ACTIONS
     public void completeOrder(Drink drink) {
         this.servedDrink = drink;
-        this.Status = "Complete";
+        this.Status = "Completed";
     }
 
     public int getID() {

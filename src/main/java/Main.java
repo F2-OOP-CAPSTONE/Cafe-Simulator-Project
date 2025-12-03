@@ -1,6 +1,4 @@
-package main.java;
-
-import main java.CoffeeShop.CoffeeShop;
+import CoffeeShop.CoffeeShop;
 
 public class Main {
     public static void main(String[] args) {
