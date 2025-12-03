@@ -1,9 +1,6 @@
-package Mechanics;
+package main.java.mechanics;
 
-import Drinks.Drink;
-import Drinks.DrinkSize;
-import Drinks.DrinkType;
-import Drinks.Ingredients;
+import main.java.drinks.*;
 
 import java.util.ArrayList;
 import java.util.List;

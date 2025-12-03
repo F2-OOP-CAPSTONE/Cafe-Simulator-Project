@@ -1,8 +1,8 @@
-package drinks;
+package main.java.drinks;
 
 public class Drink {
-    private DrinkType type;
-    private DrinkSize size;
+    private final DrinkType type;
+    private final DrinkSize size;
 //    private int quality;             maybe add quality for increase fame? quality increase when high ingredients used?
 
     public Drink(DrinkType type, DrinkSize size){

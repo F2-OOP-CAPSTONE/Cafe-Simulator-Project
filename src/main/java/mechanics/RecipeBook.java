@@ -1,8 +1,6 @@
-package Mechanics;
+package main.java.mechanics;
 
-import Drinks.DrinkType;
-import Drinks.Ingredients;
-
+import main.java.drinks.*;
 import java.util.List;
 
 public class RecipeBook {
