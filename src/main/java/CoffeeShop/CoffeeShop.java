@@ -32,40 +32,85 @@ public class CoffeeShop {
         Order newOrder = new Order(orders.size() + 1, customer);
         orders.add(newOrder);
 
-        // Player action
-    }
+        // Player action (SIMULATION PROTOTYPE)
+        Drink preparedDrink = simulateMakingDrink(newOrder.getDrinkName());
 
-    public ArrayList<String> getMenu() {
-        return menu;
-    }
+        barista.serveOrder(newOrder, preparedDrink);
 
-    public ArrayList<Order> getOrders() {
-        return orders;
-    }
+        // generate recepit and update salesreport
+        String receiptTxt = Receipt.printReceipt(newOrder);
+        System.out.println(receiptTxt);
 
-    public void manageMenu(String item, char action){
-        if(action == 'r'){
-            if(menu.contains(item)) menu.remove(item);
-            else System.out.println("Item not found");
+        if(newOrder.getStatus().equals("Completed")) {
+            salesReport.addSale(newOrder.getServedDrink().getPrice());
         }
-        else if(action == 'a'){
-            menu.add(item);
-        }
-        else System.out.println("Invalid Action");
     }
 
-    public void manageOrder(Order o, char action){
-        if(o == null) System.out.println("Invalid Order");
+    // simulate the mixing process
+    private Drink simulateMakingDrink(String requestedName) {
+        MixingGlass glass = new MixingGlass();
 
-        if(action == 'r'){
-            if(orders.contains(o)) orders.remove(o);
-            else System.out.println("Order not found");
+        if(requestedName.equals("Latte")) {
+            glass.addIngredient(Ingredients.COFFEE);
+            glass.addIngredient(Ingredients.MILK);
+        } else if(requestedName.equals("Americano")) {
+            glass.addIngredient(Ingredients.COFFEE);
+            glass.addIngredient(Ingredients.WATER);
+        } else if(requestedName.equals("Cappuccino")) {
+            glass.addIngredient(Ingredients.COFFEE);
+            glass.addIngredient(Ingredients.MILK);
+            glass.addIngredient(Ingredients.WATER);
+        } else if(requestedName.equals("Mocha")) {
+            glass.addIngredient(Ingredients.COFFEE);
+            glass.addIngredient(Ingredients.MILK);
+            glass.addIngredient(Ingredients.SUGAR);
+            glass.addIngredient(Ingredients.CHOCOLATE);
+        } else {
+            glass.addIngredient(Ingredients.WATER);
+            glass.addIngredient(Ingredients.SUGAR);
         }
-        else if(action == 'a'){
-            orders.add(o);
-        }
-        else System.out.println("Invalid Action");
+
+        return glass.finishDrink(DrinkSize.MEDIUM);
     }
+
+    public void printEndOfDayReport() {
+        System.out.println("\n=== END OF DAY REPORT ===");
+        System.out.println("Total Customers Served: " + dailyOrders.size());
+        System.out.println("Total Revenue: $" + String.format("%.2f", salesReport.getTotalSales()));
+        System.out.println("Total Tips:    $" + String.format("%.2f", barista.getTotalTips()));
+    }
+
+//    public ArrayList<String> getMenu() {
+//        return menu;
+//    }
+//
+//    public ArrayList<Order> getOrders() {
+//        return orders;
+//    }
+//
+//    public void manageMenu(String item, char action){
+//        if(action == 'r'){
+//            if(menu.contains(item)) menu.remove(item);
+//            else System.out.println("Item not found");
+//        }
+//        else if(action == 'a'){
+//            menu.add(item);
+//        }
+//        else System.out.println("Invalid Action");
+//    }
+//
+//    public void manageOrder(Order o, char action){
+//        if(o == null) System.out.println("Invalid Order");
+//
+//        if(action == 'r'){
+//            if(orders.contains(o)) orders.remove(o);
+//            else System.out.println("Order not found");
+//        }
+//        else if(action == 'a'){
+//            orders.add(o);
+//        }
+//        else System.out.println("Invalid Action");
+//    }
 
 
 }

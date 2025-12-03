@@ -32,5 +32,4 @@ public class Order {
     public Customer getCustomer() { return customer; }
     public String getDrinkName() { return drinkName; }
     public Drink getServedDrink()  { return servedDrink; }
-    p
 }
