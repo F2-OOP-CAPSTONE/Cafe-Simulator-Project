@@ -1,4 +1,4 @@
-package Drinks;
+package main.java.drinks;
 
 public enum DrinkType {
     LATTE("Latte", 150.00, 135),
