@@ -14,64 +14,100 @@ public class CoffeeShop {
     private Barista barista;
     private SalesReport salesReport;
 
+    private MixingGlass mixingGlass;
+    private Order currentOrder;
+
     public CoffeeShop(String name) {
         this.name = name;
         this.barista = new Barista("Player");
         this.orders = new ArrayList<>();
         this.salesReport = new SalesReport();
+        this.mixingGlass = new MixingGlass();
     }
 
     // -- GAME LOOP --
 
-    public void startNextTurn() {
-        // Spawn customer
+    public Order spawnCustomer() {
         Customer customer = CustomerGeneration.spawnRandomCustomer();
-//        System.out.println("Customer says: \"" + customer.getDialogue() + "\"");
 
-        // Create order
-        Order newOrder = new Order(orders.size() + 1, customer);
-        orders.add(newOrder);
+        this.currentOrder = new Order(orders.size() + 1, customer);
+        orders.add(currentOrder);
 
-        // Player action (SIMULATION PROTOTYPE)
-        Drink preparedDrink = simulateMakingDrink(newOrder.getDrinkName());
+        return currentOrder;
+    }
 
-        barista.serveOrder(newOrder, preparedDrink);
+    public void addIngredient(Ingredients ing) {
+        System.out.println("Added " + ing);
+        mixingGlass.addIngredient(ing);
+    }
 
-        // generate recepit and update salesreport
-        String receiptTxt = Receipt.printReceipt(newOrder);
+    public void serveDrink(DrinkSize size){
+        if (currentOrder == null) {
+            return;
+        }
+
+        Drink finalDrink = mixingGlass.finishDrink(size);
+        barista.serveOrder(currentOrder, finalDrink);
+
+        String receiptTxt = Receipt.printReceipt(currentOrder);
         System.out.println(receiptTxt);
 
-        if(newOrder.getStatus().equals("Completed")) {
-            salesReport.addSale(newOrder.getServedDrink().getPrice());
-        }
-    }
-
-    // simulate the mixing process
-    private Drink simulateMakingDrink(String requestedName) {
-        MixingGlass glass = new MixingGlass();
-
-        if(requestedName.equals("Latte")) {
-            glass.addIngredient(Ingredients.COFFEE);
-            glass.addIngredient(Ingredients.MILK);
-        } else if(requestedName.equals("Americano")) {
-            glass.addIngredient(Ingredients.COFFEE);
-            glass.addIngredient(Ingredients.WATER);
-        } else if(requestedName.equals("Cappuccino")) {
-            glass.addIngredient(Ingredients.COFFEE);
-            glass.addIngredient(Ingredients.MILK);
-            glass.addIngredient(Ingredients.WATER);
-        } else if(requestedName.equals("Mocha")) {
-            glass.addIngredient(Ingredients.COFFEE);
-            glass.addIngredient(Ingredients.MILK);
-            glass.addIngredient(Ingredients.SUGAR);
-            glass.addIngredient(Ingredients.CHOCOLATE);
-        } else {
-            glass.addIngredient(Ingredients.WATER);
-            glass.addIngredient(Ingredients.SUGAR);
+        if(currentOrder.getStatus().equals("Completed")) {
+            salesReport.addSale(currentOrder.getServedDrink().getPrice());
         }
 
-        return glass.finishDrink(DrinkSize.MEDIUM);
+        this.currentOrder = null;
     }
+
+//    public void startNextTurn() {
+//        // Spawn customer
+//        Customer customer = CustomerGeneration.spawnRandomCustomer();
+////        System.out.println("Customer says: \"" + customer.getDialogue() + "\"");
+//
+//        // Create order
+//        Order newOrder = new Order(orders.size() + 1, customer);
+//        orders.add(newOrder);
+//
+//        // Player action (SIMULATION PROTOTYPE)
+//        Drink preparedDrink = simulateMakingDrink(newOrder.getDrinkName());
+//
+//        barista.serveOrder(newOrder, preparedDrink);
+//
+//        // generate recepit and update salesreport
+//        String receiptTxt = Receipt.printReceipt(newOrder);
+//        System.out.println(receiptTxt);
+//
+//        if(newOrder.getStatus().equals("Completed")) {
+//            salesReport.addSale(newOrder.getServedDrink().getPrice());
+//        }
+//    }
+//
+//    // simulate the mixing process
+//    private Drink simulateMakingDrink(String requestedName) {
+//        MixingGlass glass = new MixingGlass();
+//
+//        if(requestedName.equals("Latte")) {
+//            glass.addIngredient(Ingredients.COFFEE);
+//            glass.addIngredient(Ingredients.MILK);
+//        } else if(requestedName.equals("Americano")) {
+//            glass.addIngredient(Ingredients.COFFEE);
+//            glass.addIngredient(Ingredients.WATER);
+//        } else if(requestedName.equals("Cappuccino")) {
+//            glass.addIngredient(Ingredients.COFFEE);
+//            glass.addIngredient(Ingredients.MILK);
+//            glass.addIngredient(Ingredients.WATER);
+//        } else if(requestedName.equals("Mocha")) {
+//            glass.addIngredient(Ingredients.COFFEE);
+//            glass.addIngredient(Ingredients.MILK);
+//            glass.addIngredient(Ingredients.SUGAR);
+//            glass.addIngredient(Ingredients.CHOCOLATE);
+//        } else {
+//            glass.addIngredient(Ingredients.WATER);
+//            glass.addIngredient(Ingredients.SUGAR);
+//        }
+//
+//        return glass.finishDrink(DrinkSize.MEDIUM);
+//    }
 
     public void printEndOfDayReport() {
         System.out.println("\n=== END OF DAY REPORT ===");

@@ -17,17 +17,25 @@ public class Barista {
         // Check if customer is happy
         String wanted = order.getDrinkName();
         String got = drink.getName();
-        int tip  = 0;
+        Customer cust = order.getCustomer();
+
+        System.out.println("Serving " + got + " to " + cust.getName() + "...");
 
         if(wanted.equalsIgnoreCase(got)) {
-            tip = order.getCustomer().reactToDrink(drink);
+            System.out.println("// " + cust.getHappyReaction());
+        } else {
+            System.out.println("// " + cust.getSadReaction());
         }
 
+        int tip = order.getCustomer().reactToDrink(drink, wanted);
+
         if (tip > 0) {
+            System.out.println("Received Tip: Php" + tip);
             totalTips += tip;
-        } else if (tip < 0) {
+//        } else if (tip < 0) {
 //            rep lost
         } else {
+            System.out.println("No tip received");
 //            massive rep lost
         }
     }
