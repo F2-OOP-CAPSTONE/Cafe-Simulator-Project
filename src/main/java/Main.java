@@ -1,9 +1,15 @@
-public static void main(String[] args) {
-    CoffeeShop myCafe = new CoffeeShop("Java Jolt");
+package main.java;
 
-    myCafe.startNextTurn();
-    myCafe.startNextTurn();
-    myCafe.startNextTurn();
+import main java.CoffeeShop.CoffeeShop;
 
-    myCafe.printEndOfDayReport();
+public class Main {
+    public static void main(String[] args) {
+        CoffeeShop myCafe = new CoffeeShop("Java Jolt");
+
+        myCafe.startNextTurn();
+        myCafe.startNextTurn();
+        myCafe.startNextTurn();
+
+        myCafe.printEndOfDayReport();
+    }
 }
