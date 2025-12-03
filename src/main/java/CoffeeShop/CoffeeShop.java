@@ -1,15 +1,38 @@
-package main.java.CoffeeShop;
-import java.util.*;
+package CoffeeShop;
+
+import entities.Barista;
+import entities.Customer;
+import entities.CustomerGeneration;
+import mechanics.MixingGlass;
+import drinks.*;
+import java.util.ArrayList;
 
 public class CoffeeShop {
     public final String name;
-    private ArrayList<String> menu;
+//    private ArrayList<String> menu;
     private ArrayList<Order> orders;
+    private Barista barista;
+    private SalesReport salesReport;
 
-    public CoffeeShop(String name, ArrayList<String> menu, ArrayList<Order> orders) {
+    public CoffeeShop(String name) {
         this.name = name;
-        this.menu = menu;
-        this.orders = orders;
+        this.barista = new Barista("Player");
+        this.orders = new ArrayList<>();
+        this.salesReport = new SalesReport();
+    }
+
+    // -- GAME LOOP --
+
+    public void startNextTurn() {
+        // Spawn customer
+        Customer customer = CustomerGeneration.spawnRandomCustomer();
+//        System.out.println("Customer says: \"" + customer.getDialogue() + "\"");
+
+        // Create order
+        Order newOrder = new Order(orders.size() + 1, customer);
+        orders.add(newOrder);
+
+        // Player action
     }
 
     public ArrayList<String> getMenu() {

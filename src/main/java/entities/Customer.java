@@ -1,6 +1,6 @@
 package entities;
 
-import src.drinks.Drink;
+import drinks.Drink;
 import java.util.Random;
 
 public abstract class Customer {
@@ -11,7 +11,7 @@ public abstract class Customer {
     protected Random random = new Random();
 
     public abstract String orderDrink();
-    public abstract String reactToDrink(Drink drink);
+    public abstract int reactToDrink(Drink drink);
 
     public String  getName() { return name; }
     public String getDialogue() { return dialogue; }

@@ -1,42 +1,36 @@
-package main.java.CoffeeShop;
+package CoffeeShop;
 
-import main.java.drinks.*;
-import java.util.Random;
+import drinks.Drink;
+import entities.Customer;
 
 public class Order {
     private final int ID;
+    private final Customer customer;
+    private final String drinkName;
+    private Drink servedDrink;
     private String Status;                  // Pending,Brewing,Done?
-    private String Rating;                  // Customer Only Function
-    private final Drink drink;
 
-    public Order(int ID, Drink drink){
+    public Order(int ID, Customer customer){
         this.Status = "Pending";
         this.ID = ID;
-        this.drink = drink;
+        this.customer = customer;
+        this.drinkName = customer.orderDrink();
+    }
+
+    // ACTIONS
+    public void completeOrder(Drink drink) {
+        this.servedDrink = drink;
+        this.Status = "Complete";
     }
 
     public int getID() {
         return ID;
     }
-
     public String getStatus() {
         return Status;
     }
-
-    public String getRating() {
-        return Rating;
-    }
-
-    public Drink getDrink() {
-        return drink;
-    }
-
-    public void updateStatus(String status) {
-        Status = status;
-    }
-
-    public void setRating(String rating) {
-        Rating = rating;
-    }
-
+    public Customer getCustomer() { return customer; }
+    public String getDrinkName() { return drinkName; }
+    public Drink getServedDrink()  { return servedDrink; }
+    p
 }

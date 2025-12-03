@@ -1,7 +1,7 @@
-package src.entities.types;
+package entities.types;
 
-import src.entities.Customer;
-import src.drinks.Drink;
+import entities.Customer;
+import drinks.Drink;
 
 public class StudentCustomer extends Customer {
     private static final String[] QUOTES = {
@@ -11,7 +11,7 @@ public class StudentCustomer extends Customer {
     };
     public StudentCustomer(String name) {
         this.name = name + " (Student)";
-        this.patience = 90;
+//        this.patience = 90;
 
         int index = random.nextInt(QUOTES.length);
         this.dialogue = QUOTES[index];
@@ -20,8 +20,16 @@ public class StudentCustomer extends Customer {
     public String orderDrink(){
         int index = random.nextInt(100);
         if(index < 50){
+            return "Latte";
+        } else if (index < 75){
+            return "Mocha";
+        } else if (index < 90){
             return "Americano";
-        } else if (index < 75){}
-        return ""
+        } else {
+            return "Cappuccino";
+        }
+
     }
+
+    public int reactToDrink(Drink drink) { return 0; }
 }

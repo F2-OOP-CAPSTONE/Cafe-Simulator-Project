@@ -1,11 +1,11 @@
-package src.entities;
+package entities;
 
-import src.entities.types.*;
+import entities.types.*;
 import java.util.Random;
 
 public class CustomerGeneration {
     private  static final String[] NAMES = {
-            "Kenji", "Julius", "Kharl", "Patrick", "Isaiah", "Alexis", "Kylle", "Earl", "Francis", "Jay", "Vince";
+            "Kenji", "Julius", "Kharl", "Patrick", "Isaiah", "Alexis", "Kylle", "Earl", "Francis", "Jay", "Vince"
     };
 
     private static final Random random = new Random();
