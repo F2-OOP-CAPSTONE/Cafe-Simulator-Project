@@ -11,12 +11,4 @@ public class SalesReport {
         this.coffeeShop = coffeeShop;
         totalSales = 0;
     }
-
-    public void addSale(Order o){
-        ArrayList<String> menu = coffeeShop.getMenu();
-        for(int i = 0; i < menu.size(); i++){
-            if(o.getDrink().getType().getName())
-        }
-    }
-
 }
