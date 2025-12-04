@@ -1,7 +1,7 @@
-package src.entities.types;
+package main.java.entities;
 
-import src.entities.Customer;
-import src.drinks.Drink;
+import main.java.entities.*;
+import main.java.drinks.*;
 
 public class StudentCustomer extends Customer {
     public StudentCustomer(String name) {
