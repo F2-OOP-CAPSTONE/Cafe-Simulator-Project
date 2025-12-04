@@ -1,10 +1,5 @@
-package main.java.entities;
+package entities.types;
 
-import main.java.entities.*;
-import main.java.drinks.*;
-
-public class StudentCustomer extends Customer {
-    public StudentCustomer(String name) {
-        
-    }
+public enum CustomerType {
+    STUDENT, RICH, REGULAR, KAREN;
 }

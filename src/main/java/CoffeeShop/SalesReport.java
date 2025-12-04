@@ -1,14 +1,12 @@
-package main.java.CoffeeShop;
-
-import java.util.ArrayList;
+package CoffeeShop;
 
 public class SalesReport {
-    private CoffeeShop coffeeShop;
     private double totalSales;
-    private ArrayList<Integer> drinkCount;
 
-    public SalesReport(CoffeeShop coffeeShop) {
-        this.coffeeShop = coffeeShop;
-        totalSales = 0;
+    public SalesReport() {
+        this.totalSales = 0.0;
     }
+
+    public void addSale(double amount) { this.totalSales += amount; }
+    public double getTotalSales() { return totalSales; }
 }
