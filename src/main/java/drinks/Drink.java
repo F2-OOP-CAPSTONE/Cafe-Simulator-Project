@@ -10,6 +10,14 @@ public class Drink {
         this.size = size;
     }
 
+    public DrinkType getType() {
+        return type;
+    }
+
+    public DrinkSize getSize() {
+        return size;
+    }
+
     public double getPrice() {
         double basePrice = type.getPrice();
         double multiplier = size.getPriceMultiplier();
