@@ -1,10 +1,5 @@
-package src.entities.types;
+package entities.types;
 
-import src.entities.Customer;
-import src.drinks.Drink;
-
-public class StudentCustomer extends Customer {
-    public StudentCustomer(String name) {
-        
-    }
+public enum CustomerType {
+    STUDENT, RICH, REGULAR, KAREN;
 }
