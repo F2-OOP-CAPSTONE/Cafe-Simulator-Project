@@ -26,9 +26,9 @@ public abstract class Customer {
 
             int forSize = random.nextInt(100);
 
-            if(forType > 75){
+            if(forSize > 75){
                 size = DrinkSize.LARGE;
-            } else if (forType < 75){
+            } else if (forSize < 50){
                 size = DrinkSize.MEDIUM;
             } else size = DrinkSize.SMALL;
 

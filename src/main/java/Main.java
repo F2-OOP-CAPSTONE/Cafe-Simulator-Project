@@ -41,7 +41,7 @@ public class Main {
                         System.out.println("\n[1] Coffee      [2] Milk               [3] Water");
                         System.out.println("[4] Sugar       [5] Chocolate          [6] Syrup");
                         System.out.println("[7] Queue       [8] SERVE              [9] CHECK INVENTORY");
-                        System.out.println("                [0] RESTOCK");
+                        System.out.println("[67] Reset Inventory      [0] RESTOCK");
                         System.out.print("Select Ingredient: ");
 
                         int choice = 0;
@@ -75,11 +75,14 @@ public class Main {
                                 myCafe.peekQueue();
                                 break;
                             case 8:
-                                myCafe.serveDrink(DrinkSize.MEDIUM);
+                                myCafe.serveDrink();
                                 makingDrink = false;
                                 break;
                             case 9:
                                 myCafe.checkInventory();
+                                break;
+                            case 67:
+                                myCafe.getBarista().resetIngredients(myCafe.getInventory());
                                 break;
                             case 0:
                                 if(!hasRestocked) hasRestocked = myCafe.restockInventory();

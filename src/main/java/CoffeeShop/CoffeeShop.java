@@ -30,11 +30,13 @@ public class CoffeeShop {
         manageOrder("Enqueue", newOrder);
     }
 
-    public void serveDrink(DrinkSize size) {
+    public void serveDrink() {
         Order currentOrder = orders.getFirst();
 
-        barista.serveOrder(currentOrder);
+        HashMap<String, Integer> res = barista.serveOrder(currentOrder);
+        evaluateServedDrink(currentOrder,res, currentOrder.getOrderedDrink().getType().getRecipe());
 
+        System.out.printf("Price: %.2f", currentOrder.getPrice());
         String receiptTxt = Receipt.printReceipt(currentOrder);
         System.out.println(receiptTxt);
 
@@ -117,6 +119,8 @@ public class CoffeeShop {
             }
         return true;
     }
+
+
 
 
     public void peekQueue(){
@@ -245,6 +249,15 @@ public class CoffeeShop {
         Inventory = new HashMap<>();
         for(String s : INGS){
             Inventory.put(s, 50);
+        }
+    }
+
+    private void evaluateServedDrink(Order o, HashMap<String, Integer> ServedDrink, HashMap<String, Integer> OrderedDrink){
+        for (Map.Entry<String, Integer> entry1 : ServedDrink.entrySet()) {
+            String key = entry1.getKey();
+            int value1 = entry1.getValue();
+            int value2 = OrderedDrink.get(key);
+            if(value1 != value2)  o.setPrice(o.getPrice() - 1.5);
         }
     }
 
