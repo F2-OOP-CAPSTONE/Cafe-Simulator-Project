@@ -1,9 +1,10 @@
-package mechanics;
-
-import drinks.*;
+package main.java.mechanics;
 
 import java.util.ArrayList;
 import java.util.List;
+import main.java.drinks.*;
+
+
 public class MixingGlass {
     private List<Ingredients> currentIngredients = new ArrayList<>();
 

@@ -1,11 +1,23 @@
-package entities;
+package main.java.entities;
 
-import entities.types.*;
+import main.java.entities.types.*;
+import main.java.drinks.*;
 import java.util.Random;
 
 public class CustomerGeneration {
     private  static final String[] NAMES = {
-            "Kenji", "Julius", "Kharl", "Patrick", "Isaiah", "Alexis", "Kylle", "Earl", "Francis", "Jay", "Vince"
+            "Kenji", "Julius", "Kharl", "Patrick",
+            "Isaiah", "Alexis", "Kylle", "Earl",
+            "Francis", "Jay", "Vince", "Jonel",
+            "Adrian", "Kyle", "Renz", "Jairo", "Liam",
+            "Rafael", "Justine", "Noel", "Aldrin", "Mark",
+            "Jared", "Nathan", "Dylan", "Cedrick", "Harvey",
+            "Jasper", "Sean", "Rei", "Louis", "Andre",
+            "Gabriel", "Miguel", "Leo", "Zach", "Ronnie",
+            "Jomar", "Aljon", "Bryle", "Jeric", "Reiven",
+            "Rommel", "Arvin", "Benjo", "Jerson", "Lorenz",
+            "Kennard", "Jethro", "Aldous", "Raffy", "Tonio",
+            "Migs", "Joemar", "Eljon", "Gelo", "Jundi",
     };
 
     private static final Random random = new Random();
