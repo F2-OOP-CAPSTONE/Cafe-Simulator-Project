@@ -1,5 +1,6 @@
 import CoffeeShop.*;
 import drinks.*;
+import form.TempPrepareDrinkGui;
 
 import java.sql.SQLOutput;
 import java.util.Scanner;
@@ -9,6 +10,11 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         CoffeeShop myCafe = new CoffeeShop("Java Jolt");
 
+        TempPrepareDrinkGui GUI = new TempPrepareDrinkGui(myCafe);
+
+        javax.swing.SwingUtilities.invokeLater(() -> GUI.setVisible(true));
+
+
         boolean gameRunning = true;
 
         System.out.println("Welcome to Cafe Simulator!");
@@ -16,6 +22,7 @@ public class Main {
 
         while (gameRunning) {
             Order order = myCafe.spawnCustomer();
+            GUI.SetOrder(order);
 
             System.out.println("\n>>> NEW CUSTOMER: " + order.getCustomer().getName());
             System.out.println("// " + order.getCustomer().getDialogue());

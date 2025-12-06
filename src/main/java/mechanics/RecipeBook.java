@@ -3,7 +3,7 @@ package mechanics;
 import drinks.*;
 import java.util.List;
 
-public class RecipeBook {
+public class  RecipeBook {
     public static DrinkType identify(List<Ingredients> ingredients) {
         boolean hasCoffee = ingredients.contains(Ingredients.COFFEE);
         boolean hasMilk = ingredients.contains(Ingredients.MILK);
