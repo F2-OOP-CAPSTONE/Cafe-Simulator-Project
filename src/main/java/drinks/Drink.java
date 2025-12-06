@@ -1,4 +1,4 @@
-package drinks;
+package main.java.drinks;
 
 public class Drink {
     private final DrinkType type;

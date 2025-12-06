@@ -1,6 +1,6 @@
-package CoffeeShop;
+package main.java.CoffeeShop;
 
-import drinks.Drink;
+import main.java.drinks.*;
 
 public class Receipt {
     public static String printReceipt(Order order) {

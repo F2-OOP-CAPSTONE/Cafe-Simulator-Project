@@ -1,7 +1,7 @@
-package entities.types;
+package main.java.entities.types;
 
-import entities.Customer;
-import drinks.Drink;
+import main.java.entities.*;
+import main.java.drinks.*;
 
 import java.util.Random;
 
@@ -30,18 +30,6 @@ public class RegularCustomer extends Customer {
         this.dialogue = QUOTES[index];
     }
 
-    public String orderDrink(){
-        int index = random.nextInt(100);
-        if(index < 50){
-            return "Latte";
-        } else if (index < 75){
-            return "Cappuccino";
-        } else if (index < 90){
-            return "Americano";
-        } else {
-            return "Mocha";
-        }
-    }
 
     public int reactToDrink(Drink drink, String wanted) {
         if (drink.getName().equalsIgnoreCase(wanted)) {

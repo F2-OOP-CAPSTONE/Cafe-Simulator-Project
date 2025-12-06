@@ -1,4 +1,7 @@
-package drinks;
+package main.java.drinks;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public enum DrinkType {
     LATTE("Latte", 150.00, 135),
@@ -17,7 +20,9 @@ public enum DrinkType {
         this.calories = calories;
     }
 
+
+
     public String getName() { return name; }
     public double getPrice() { return  price; }
-    public  double getCalories() { return  calories; }
+    public  double getCalories() { return  calories;}
 }
