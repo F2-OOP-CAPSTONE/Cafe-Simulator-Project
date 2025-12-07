@@ -1,7 +1,7 @@
-package main.java.CoffeeShop;
+package CoffeeShop;
 
-import main.java.drinks.*;
-import main.java.entities.*;
+import drinks.*;
+import entities.*;
 
 public class Order {
     private final int ID;

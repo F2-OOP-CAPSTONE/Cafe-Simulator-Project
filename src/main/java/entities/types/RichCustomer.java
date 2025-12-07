@@ -1,7 +1,7 @@
-package main.java.entities.types;
+package entities.types;
 
-import main.java.entities.*;
-import main.java.drinks.*;
+import entities.*;
+import drinks.*;
 
 import java.util.Random;
 

@@ -1,15 +1,15 @@
-package main.java.CoffeeShop;
+package CoffeeShop;
 
-import main.java.entities.*;
-import main.java.drinks.*;
-import main.java.mechanics.*;
+import entities.*;
+import drinks.*;
+import mechanics.*;
 
 import java.util.*;
 
 public class CoffeeShop {
     public final String name;
     private Barista barista;
-    private ArrayList<Order> orders;
+    private LinkedList<Order> orders;
     private SalesReport salesReport;
     private ArrayList<String> menu = new ArrayList<>(Arrays.asList("Latte", "Americano", "Cappuccino", "Mocha", "Coffee of all Sadness and Grief"));
     private ArrayList<String> INGS = new ArrayList<>(Arrays.asList("COFFEE", "MILK", "WATER", "SUGAR", "CHOCOLATE", "SYRUP", "CARAMEL"));
@@ -17,24 +17,30 @@ public class CoffeeShop {
 
     public CoffeeShop(String name) {
         this.name = name;
-        this.orders = new ArrayList<Order>();
+        this.orders = new LinkedList<>();
         this.salesReport = new SalesReport();
         setBarista();
         setInventory(INGS);
     }
     // -- GAME LOOP --
 
-    public void spawnCustomer() {
+    public Order spawnCustomer() {
         Customer customer = CustomerGeneration.spawnRandomCustomer();
         Order newOrder = new Order(orders.size() + 1, customer);
         manageOrder("Enqueue", newOrder);
+        return newOrder;
     }
 
     public void serveDrink() {
+        if (orders.isEmpty()) {
+            System.out.println("No orders to serve.");
+            return;
+        }
+
         Order currentOrder = orders.getFirst();
 
         HashMap<String, Integer> res = barista.serveOrder(currentOrder);
-        evaluateServedDrink(currentOrder,res, currentOrder.getOrderedDrink().getType().getRecipe());
+        evaluateServedDrink(currentOrder, res, currentOrder.getOrderedDrink().getType().getRecipe());
 
         System.out.printf("Price: %.2f", currentOrder.getPrice());
         String receiptTxt = Receipt.printReceipt(currentOrder);
@@ -106,17 +112,17 @@ public class CoffeeShop {
             }
         }
 
-            for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
-                if (entry.getKey().equalsIgnoreCase(e.getFirst().name())) {
-                    entry.setValue(entry.getValue() + n.getFirst());
-                }
-                if (entry.getKey().equalsIgnoreCase(e.get(1).name())) {
-                    entry.setValue(entry.getValue() + n.get(1));
-                }
-                if (entry.getKey().equalsIgnoreCase(e.get(2).name())) {
-                    entry.setValue(entry.getValue() + n.get(2));
-                }
+        for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(e.getFirst().name())) {
+                entry.setValue(entry.getValue() + n.getFirst());
             }
+            if (entry.getKey().equalsIgnoreCase(e.get(1).name())) {
+                entry.setValue(entry.getValue() + n.get(1));
+            }
+            if (entry.getKey().equalsIgnoreCase(e.get(2).name())) {
+                entry.setValue(entry.getValue() + n.get(2));
+            }
+        }
         return true;
     }
 
@@ -188,10 +194,14 @@ public class CoffeeShop {
         }
 
         if(action.equalsIgnoreCase("DEQUEUE")){
-            orders.removeFirst();
+            if(!orders.isEmpty()) {
+                orders.removeFirst();
+            }
         }
         else if(action.equalsIgnoreCase("ENQUEUE")){
-            orders.add(o);
+            if(o != null) {
+                orders.add(o);
+            }
         }
         else System.out.println("Invalid Action");
     }
@@ -207,7 +217,7 @@ public class CoffeeShop {
 
     public Barista getBarista() {return barista;}
     public ArrayList<String> getMenu() {return menu;}
-    public ArrayList<Order> getOrders() {return orders;}
+    public LinkedList<Order> getOrders() {return orders;}
     public HashMap<String, Integer> getInventory() { return Inventory; }
 
     //
@@ -253,10 +263,14 @@ public class CoffeeShop {
     }
 
     private void evaluateServedDrink(Order o, HashMap<String, Integer> ServedDrink, HashMap<String, Integer> OrderedDrink){
+        if (ServedDrink == null || OrderedDrink == null) {
+            return;
+        }
+
         for (Map.Entry<String, Integer> entry1 : ServedDrink.entrySet()) {
             String key = entry1.getKey();
             int value1 = entry1.getValue();
-            int value2 = OrderedDrink.get(key);
+            int value2 = OrderedDrink.getOrDefault(key.toUpperCase(), OrderedDrink.getOrDefault(key, 0));
             if(value1 != value2)  o.setPrice(o.getPrice() - 1.5);
         }
     }
