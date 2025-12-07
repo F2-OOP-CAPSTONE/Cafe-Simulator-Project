@@ -1,7 +1,7 @@
-package main.java.entities;
+package entities;
 
-import main.java.entities.types.*;
-import main.java.drinks.*;
+import entities.types.*;
+import drinks.*;
 import java.util.Random;
 
 public class CustomerGeneration {

@@ -1,4 +1,4 @@
-package main.java.drinks;
+package drinks;
 
 import java.util.ArrayList;
 

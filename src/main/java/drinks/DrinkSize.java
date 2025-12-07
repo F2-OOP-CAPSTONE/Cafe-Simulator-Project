@@ -1,4 +1,4 @@
-package main.java.drinks;
+package drinks;
 
 public enum DrinkSize {
     SMALL("Small", 0.80, 0.75),
