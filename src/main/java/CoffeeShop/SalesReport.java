@@ -1,4 +1,4 @@
-package main.java.CoffeeShop;
+package CoffeeShop;
 
 import java.util.*;
 

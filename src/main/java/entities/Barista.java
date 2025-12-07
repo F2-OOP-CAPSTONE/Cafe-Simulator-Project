@@ -1,9 +1,9 @@
-package main.java.entities;
+package entities;
 
-import main.java.CoffeeShop.*;
-import main.java.drinks.*;
-import main.java.entities.types.*;
-import main.java.mechanics.*;
+import CoffeeShop.*;
+import drinks.*;
+import entities.types.*;
+import mechanics.*;
 
 import java.util.*;
 
@@ -20,6 +20,10 @@ public class Barista {
     }
 
     public HashMap<String, Integer> serveOrder(Order order) {
+        if (currentOrderIngredients == null) {
+            setCOI(new HashMap<>());
+        }
+
         Drink drink = mixingGlass.finishDrink(order.getOrderedDrink().getSize());
 
         order.completeOrder(drink);
@@ -88,8 +92,14 @@ public class Barista {
 
     private void setCOI(HashMap<String,Integer> Inv){
         currentOrderIngredients = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : Inv.entrySet()) {
-            currentOrderIngredients.put(entry.getKey(), 0);
+        if (Inv != null && !Inv.isEmpty()) {
+            for (Map.Entry<String, Integer> entry : Inv.entrySet()) {
+                currentOrderIngredients.put(entry.getKey(), 0);
+            }
+        } else {
+            for (Ingredients ing : Ingredients.values()) {
+                currentOrderIngredients.put(ing.name(), 0);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
-package main.java.entities;
+package entities;
 
-import main.java.CoffeeShop.*;
-import main.java.drinks.*;
+import CoffeeShop.*;
+import drinks.*;
 import java.util.Random;
 
 public abstract class Customer {

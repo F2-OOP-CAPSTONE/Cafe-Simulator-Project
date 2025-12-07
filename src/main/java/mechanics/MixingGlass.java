@@ -1,8 +1,8 @@
-package main.java.mechanics;
+package mechanics;
 
 import java.util.ArrayList;
 import java.util.List;
-import main.java.drinks.*;
+import drinks.*;
 
 
 public class MixingGlass {
