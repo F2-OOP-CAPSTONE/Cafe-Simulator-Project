@@ -2,8 +2,7 @@ package main.java.entities;
 
 import main.java.CoffeeShop.*;
 import main.java.drinks.*;
-import main.java.entities.types.*;
-import main.java.mechanics.*;
+import main.java.mechanics.MixingGlass;
 
 import java.util.*;
 
@@ -11,7 +10,6 @@ public class Barista {
     private String name;
     private MixingGlass mixingGlass;
     private double totalTips;
-    private HashMap<String,Integer> currentOrderIngredients;
 
     public Barista(String name) {
         this.name = name;
@@ -19,7 +17,7 @@ public class Barista {
         this.totalTips = 0;
     }
 
-    public HashMap<String, Integer> serveOrder(Order order) {
+    public void serveOrder(Order order) {
         Drink drink = mixingGlass.finishDrink(order.getOrderedDrink().getSize());
 
         order.completeOrder(drink);
@@ -34,9 +32,6 @@ public class Barista {
             System.out.println("// " + cust.getHappyReaction());
         } else {
             System.out.println("// " + cust.getSadReaction());
-            if(order.getCustomer() instanceof KarenCustomer) order.setPrice(0);
-            else if(order.getCustomer() instanceof RichCustomer) order.setPrice(order.getPrice() * 0.75);
-            else order.setPrice(order.getPrice() / 2);
         }
 
         int tip = order.getCustomer().reactToDrink(drink, wanted);
@@ -50,16 +45,9 @@ public class Barista {
             System.out.println("No tip received");
 //            massive rep lost
         }
-
-        HashMap<String,Integer> toCheck = currentOrderIngredients;
-        currentOrderIngredients = null;
-
-        return toCheck;
     }
 
     public void addIngredient(Ingredients ing, HashMap<String,Integer> Inventory) { // to add inventory manipulation
-        if(currentOrderIngredients == null) setCOI(Inventory);
-
         for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
             if(entry.getKey().equals(ing.name())) {
                 if(entry.getValue() == 0){
@@ -67,7 +55,6 @@ public class Barista {
                     return;
                 }
                 entry.setValue(entry.getValue()- 1);
-                currentOrderIngredients.put(entry.getKey(), currentOrderIngredients.get(entry.getKey()) + 1);
             }
         }
 
@@ -75,21 +62,5 @@ public class Barista {
         mixingGlass.addIngredient(ing);
     }
 
-    public void resetIngredients(HashMap<String,Integer> Inventory){
-        for (Map.Entry<String, Integer> entry1 : Inventory.entrySet()) {
-            String key = entry1.getKey();
-            int returnVal = currentOrderIngredients.get(key);
-            entry1.setValue(entry1.getValue() + returnVal);
-            currentOrderIngredients.put(key,0);
-        }
-    }
-
     public double getTotalTips() { return totalTips; }
-
-    private void setCOI(HashMap<String,Integer> Inv){
-        currentOrderIngredients = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : Inv.entrySet()) {
-            currentOrderIngredients.put(entry.getKey(), 0);
-        }
-    }
 }

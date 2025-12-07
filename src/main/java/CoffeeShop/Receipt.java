@@ -5,7 +5,7 @@ import main.java.drinks.*;
 public class Receipt {
     public static String printReceipt(Order order) {
         StringBuilder sb = new StringBuilder();
-        Drink drink = order.getOrderedDrink();
+        Drink drink = order.getServedDrink();
 
         sb.append("========== RECEPIT ==========\n");
         sb.append("Order ID: #").append(order.getID()).append("\n");
@@ -14,7 +14,7 @@ public class Receipt {
 
         if(drink != null) {
             sb.append("Item:        ").append(drink.getFullName()).append("\n");
-            sb.append("Price:       Php").append(String.format("%.2f", order.getPrice())).append("\n");
+            sb.append("Price:       Php").append(String.format("%.2f", drink.getPrice())).append("\n");
             sb.append("Calories:    ").append(drink.getCalorie()).append(" kcal\n");
         } else {
             sb.append("Item:        [Order Failed]\n");
