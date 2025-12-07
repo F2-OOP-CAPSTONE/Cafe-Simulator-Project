@@ -1,18 +1,18 @@
 package form;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
-public class Recipe extends JFrame{
-    private JPanel panel1;
-    private JPanel SigmaMode;
-    private JPanel BetaNerd;
-    private JPanel AlphaWolf;
-    private JPanel CoolGuySupreme;
-    private JPanel GerkinMyBerkin;
-
-    public Recipe(){
-        setContentPane(panel1);
+public class Recipe extends JFrame {
+    public Recipe() {
+        setTitle("Recipes");
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(12, 12, 12, 12));
+        panel.add(new JLabel("Add recipe info / art here."));
+        setContentPane(panel);
         pack();
+        setLocationRelativeTo(null);
     }
 }
