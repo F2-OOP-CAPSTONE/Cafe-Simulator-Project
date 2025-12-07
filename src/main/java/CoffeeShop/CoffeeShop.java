@@ -113,8 +113,8 @@ public class CoffeeShop {
         }
 
         for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(e.getFirst().name())) {
-                entry.setValue(entry.getValue() + n.getFirst());
+            if (entry.getKey().equalsIgnoreCase(e.get(0).name())) {
+                entry.setValue(entry.getValue() + n.get(0));
             }
             if (entry.getKey().equalsIgnoreCase(e.get(1).name())) {
                 entry.setValue(entry.getValue() + n.get(1));
