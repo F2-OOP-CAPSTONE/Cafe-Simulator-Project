@@ -1,9 +1,6 @@
-package main.java;
-
-import main.java.CoffeeShop.*;
-import main.java.drinks.*;
-import main.java.mechanics.*;
-import main.java.entities.*;
+import CoffeeShop.*;
+import drinks.*;
+import form.TempPrepareDrinkGui;
 
 import java.sql.SQLOutput;
 import java.util.*;
@@ -13,7 +10,11 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         CoffeeShop myCafe = new CoffeeShop("Java Jolt");
 
-        Random random = new Random();
+        TempPrepareDrinkGui GUI = new TempPrepareDrinkGui(myCafe);
+
+        javax.swing.SwingUtilities.invokeLater(() -> GUI.setVisible(true));
+
+
         boolean gameRunning = true;
         boolean round = true;
 
@@ -21,7 +22,28 @@ public class Main {
         System.out.println("------------------------------");
 
         while (gameRunning) {
-            int numberOfCustomers = random.nextInt(1,15);
+            Order order = myCafe.spawnCustomer();
+            GUI.SetOrder(order);
+
+            System.out.println("\n>>> NEW CUSTOMER: " + order.getCustomer().getName());
+            System.out.println("// " + order.getCustomer().getDialogue());
+            System.out.println("ORDER: " + order.getDrinkName());
+            System.out.println("----------------------------------");
+
+            boolean makingDrink = true;
+
+            while (makingDrink) {
+                System.out.println("\n[1] Coffee        [2] Milk        [3] Water");
+                System.out.println("[4] Sugar         [5] Chocolate   [6] Syrup");
+                System.out.println("[9] SERVE");
+                System.out.print("Select Ingredient: ");
+
+                int choice = 0;
+                try {
+                    choice = Integer.parseInt(sc.nextLine());
+                } catch (NumberFormatException e) {
+                    choice = 0;
+                }
 
             for(int i=0;i<numberOfCustomers;i++){
                 myCafe.spawnCustomer();
