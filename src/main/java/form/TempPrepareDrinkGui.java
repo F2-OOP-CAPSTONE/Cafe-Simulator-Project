@@ -1,158 +1,190 @@
 package form;
 
-import CoffeeShop.*;
+import CoffeeShop.CoffeeShop;
+import CoffeeShop.Order;
 import drinks.DrinkSize;
 import drinks.Ingredients;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class TempPrepareDrinkGui extends JFrame{
-    private JPanel RootPane;
-    private JPanel CustomerInfoPane;
-    private JButton coffeeButton;
-    private JPanel IngredientsPane;
-    private JButton milkButton;
-    private JButton waterButton;
-    private JButton sugarButton;
-    private JButton chocolateButton;
-    private JButton syrupButton;
-    private JButton confirmButton;
-    private JButton ingredientsButton;
-    private JLabel CoffeeAmntLabel;
-    private JLabel MilkAmntLabel;
-    private JLabel WaterAmntLabel;
-    private JLabel SugarAmntLabel;
-    private JLabel ChocoAmntLabel;
-    private JLabel SyrupAmntLabel;
-    private JLabel CustomerInfoLabel;
-    private JLabel CustomerMsgLabel;
-    private JLabel OrderLable;
+public class TempPrepareDrinkGui extends JFrame {
+    private final CoffeeShop cafe;
+    private Order order;
+    private ReceiptGui receiptGui;
 
-    Order order;
-    ReceiptGui receiptGui;
-    Recipe recipe;
+    private JLabel customerInfoLabel;
+    private JLabel customerMsgLabel;
+    private JLabel orderLabel;
 
-    public TempPrepareDrinkGui(CoffeeShop cafe){
-        setContentPane(RootPane);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private JLabel coffeeCount;
+    private JLabel milkCount;
+    private JLabel waterCount;
+    private JLabel sugarCount;
+    private JLabel chocoCount;
+    private JLabel syrupCount;
+
+    private int coffeeAmnt = 0;
+    private int milkAmnt = 0;
+    private int waterAmnt = 0;
+    private int sugarAmnt = 0;
+    private int chocoAmnt = 0;
+    private int syrupAmnt = 0;
+
+    public TempPrepareDrinkGui(CoffeeShop cafe) {
+        this.cafe = cafe;
+        buildUi();
+        setTitle("Coffee Prep");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
-        setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
         updateContent();
-
-        coffeeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                coffeeAmnt++;
-                cafe.addIngredient(Ingredients.COFFEE);
-                updateContent();
-            }
-        });
-
-        syrupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                syrupAmnt++;
-                cafe.addIngredient(Ingredients.SYRUP);
-                updateContent();
-            }
-        });
-
-        milkButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                milkAmnt++;
-                cafe.addIngredient(Ingredients.MILK);
-                updateContent();
-            }
-        });
-
-        waterButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                waterAmnt++;
-                cafe.addIngredient(Ingredients.WATER);
-                updateContent();
-            }
-        });
-
-        sugarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sugarAmnt++;
-                cafe.addIngredient(Ingredients.SUGAR);
-                updateContent();
-            }
-        });
-
-        chocolateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chocoAmnt++;
-                cafe.addIngredient(Ingredients.CHOCOLATE);
-                updateContent();
-            }
-        });
-
-        confirmButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cafe.serveDrink(DrinkSize.MEDIUM);
-                receiptGui = new ReceiptGui(order);
-                receiptGui.setVisible(true);
-                receiptGui.repaint();
-                receiptGui.getServeNextButton().addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        order = cafe.spawnCustomer();
-                        receiptGui.setVisible(false);
-                        coffeeAmnt = 0;
-                        milkAmnt = 0;
-                        waterAmnt = 0;
-                        sugarAmnt = 0;
-                        chocoAmnt = 0;
-                        syrupAmnt = 0;
-                        updateContent();
-                    }
-                });
-            }
-        });
-
-        ingredientsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                recipe = new Recipe();
-                recipe.setVisible(true);
-            }
-        });
     }
 
-    int coffeeAmnt = 0;
-    int milkAmnt = 0;
-    int waterAmnt = 0;
-    int sugarAmnt = 0;
-    int chocoAmnt = 0;
-    int syrupAmnt = 0;
+    private void buildUi() {
+        JPanel root = new JPanel(new BorderLayout(0, 10));
+        root.setBorder(new EmptyBorder(12, 12, 12, 12));
+        root.setPreferredSize(new Dimension(360, 260));
+        root.setMinimumSize(new Dimension(340, 240));
 
-    void updateContent(){
-        if(order != null) {
-            CustomerInfoLabel.setText("NEW CUSTOMER: " + order.getCustomer().getName());
-            CustomerMsgLabel.setText(order.getCustomer().getDialogue());
-            OrderLable.setText("ORDER: " + order.getDrinkName());
-        }
+        // Customer info (left-aligned, multi-line friendly via HTML)
+        JPanel info = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+        info.setAlignmentX(Component.LEFT_ALIGNMENT);
+        customerInfoLabel = new JLabel("NEW CUSTOMER:");
+        customerMsgLabel = new JLabel("");
+        orderLabel = new JLabel("ORDER:");
+        customerInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        customerMsgLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        orderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        info.add(customerInfoLabel);
+        info.add(Box.createVerticalStrut(4));
+        info.add(customerMsgLabel);
+        info.add(Box.createVerticalStrut(4));
+        info.add(orderLabel);
+        root.add(info, BorderLayout.NORTH);
 
-        CoffeeAmntLabel.setText(Integer.toString(coffeeAmnt));
-        MilkAmntLabel.setText(Integer.toString(milkAmnt));
-        WaterAmntLabel.setText(Integer.toString(waterAmnt));
-        SugarAmntLabel.setText(Integer.toString(sugarAmnt));
-        ChocoAmntLabel.setText(Integer.toString(chocoAmnt));
-        SyrupAmntLabel.setText(Integer.toString(syrupAmnt));
+        // Ingredient controls laid out in a stable GridBag to prevent overflow
+        coffeeCount = centeredLabel("0");
+        milkCount = centeredLabel("0");
+        waterCount = centeredLabel("0");
+        sugarCount = centeredLabel("0");
+        chocoCount = centeredLabel("0");
+        syrupCount = centeredLabel("0");
 
+        JPanel grid = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 10, 4, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+
+        addCountAndButton(grid, gbc, 0, 0, coffeeCount, "Coffee", Ingredients.COFFEE, () -> coffeeAmnt++, () -> coffeeAmnt);
+        addCountAndButton(grid, gbc, 1, 0, milkCount, "Milk", Ingredients.MILK, () -> milkAmnt++, () -> milkAmnt);
+        addCountAndButton(grid, gbc, 2, 0, waterCount, "Water", Ingredients.WATER, () -> waterAmnt++, () -> waterAmnt);
+
+        addCountAndButton(grid, gbc, 0, 2, sugarCount, "Sugar", Ingredients.SUGAR, () -> sugarAmnt++, () -> sugarAmnt);
+        addCountAndButton(grid, gbc, 1, 2, chocoCount, "Chocolate", Ingredients.CHOCOLATE, () -> chocoAmnt++, () -> chocoAmnt);
+        addCountAndButton(grid, gbc, 2, 2, syrupCount, "Syrup", Ingredients.SYRUP, () -> syrupAmnt++, () -> syrupAmnt);
+
+        // Confirm + Reset row
+        JButton confirmButton = new JButton("Confirm");
+        confirmButton.addActionListener(this::onConfirm);
+        JButton resetButton = new JButton("Reset");
+        resetButton.addActionListener(this::onReset);
+
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        grid.add(confirmButton, gbc);
+        gbc.gridx = 2;
+        grid.add(resetButton, gbc);
+
+        root.add(grid, BorderLayout.CENTER);
+        setContentPane(root);
+    }
+
+    private JLabel centeredLabel(String text) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(60, 16));
+        return label;
+    }
+
+    private void addCountAndButton(JPanel grid, GridBagConstraints base, int col, int row,
+                                   JLabel countLabel, String btnText, Ingredients ing,
+                                   Runnable inc, java.util.function.IntSupplier valSupplier) {
+        GridBagConstraints gbc = (GridBagConstraints) base.clone();
+        gbc.gridx = col;
+        gbc.gridy = row;
+        grid.add(countLabel, gbc);
+
+        gbc = (GridBagConstraints) base.clone();
+        gbc.gridx = col;
+        gbc.gridy = row + 1;
+        JButton b = new JButton(btnText);
+        b.addActionListener(e -> addIngredient(ing, inc, valSupplier, countLabel));
+        grid.add(b, gbc);
+    }
+
+    private void addIngredient(Ingredients ing, Runnable increment, java.util.function.IntSupplier valueSup, JLabel label) {
+        cafe.getBarista().addIngredient(ing, cafe.getInventory());
+        increment.run();
+        label.setText(Integer.toString(valueSup.getAsInt()));
         repaint();
     }
-    public void SetOrder(Order order){
+
+    private void onConfirm(ActionEvent e) {
+        if (order == null) return;
+        cafe.serveDrink(); // uses barista’s built drink
+        receiptGui = new ReceiptGui(order);
+        receiptGui.setVisible(true);
+        receiptGui.getServeNextButton().addActionListener(evt -> {
+            order = cafe.spawnCustomer();
+            resetCounts();
+            updateContent();
+            receiptGui.setVisible(false);
+            // re-pack to ensure layout fits after text changes
+            pack();
+        });
+    }
+
+    private void onReset(ActionEvent e) {
+        cafe.getBarista().resetIngredients(cafe.getInventory());
+        resetCounts();
+        updateContent();
+        pack();
+    }
+
+    private void resetCounts() {
+        coffeeAmnt = milkAmnt = waterAmnt = sugarAmnt = chocoAmnt = syrupAmnt = 0;
+    }
+
+    void updateContent() {
+        if (order != null) {
+            customerInfoLabel.setText("NEW CUSTOMER: " + order.getCustomer().getName());
+            customerMsgLabel.setText(html(order.getCustomer().getDialogue()));
+            orderLabel.setText("ORDER: " + order.getDrinkName());
+        } else {
+            customerInfoLabel.setText("Waiting for customer...");
+            customerMsgLabel.setText("");
+            orderLabel.setText("");
+        }
+        coffeeCount.setText(Integer.toString(coffeeAmnt));
+        milkCount.setText(Integer.toString(milkAmnt));
+        waterCount.setText(Integer.toString(waterAmnt));
+        sugarCount.setText(Integer.toString(sugarAmnt));
+        chocoCount.setText(Integer.toString(chocoAmnt));
+        syrupCount.setText(Integer.toString(syrupAmnt));
+        pack();
+        repaint();
+    }
+
+    private String html(String text) {
+        return "<html>" + text.replace("\n", "<br>") + "</html>";
+    }
+
+    public void SetOrder(Order order) {
         this.order = order;
         updateContent();
     }

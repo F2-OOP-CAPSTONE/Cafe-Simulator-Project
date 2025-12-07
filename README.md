@@ -1,28 +1,20 @@
 # Cafe-Simulator-Project
 
-CoffeeShop System
- 
-A simple Java-based system that simulates the operations of a cafe. Customers 
-can place orders for drinks, baristas prepare and serve them, and the system 
-tracks orders, menus, and daily sales. It models interactions between drinks, 
-customers, baristas, and orders to replicate a functional coffee shop workflow.
+A friendly desktop cafe simulator where customers line up, you mix drinks in a simple UI, and receipts/sales grow as you serve them.
 
- ---
- 
 Features
- 
-Supports menu creation with drinks, prices, and customizable add-ons
- 
-Allows customers to create orders and generate receipts
- 
-Models barista actions such as preparing and serving drinks
- 
-Includes basic inventory logic for tracking beans, milk, and syrup usage
- 
----
- 
-Documentation
 
-UML Diagram – (https://drive.google.com/file/d/1KDfn-AAJAlGAdKw20MNL4D0bn6htUuTp/view?usp=sharing)
- 
- 
+- Mix coffee, milk, water, sugar, chocolate, and syrup to match recipes or experiment.
+- Watch different customer types (regular, student, rich, karen) queue, chat, and order.
+- See prices adjust if a drink doesn’t match the recipe, then view receipts and daily totals.
+- Light JUnit checks keep the barista and drink logic behaving.
+
+Install / run
+
+- Windows package manager: `winget install OpenJDK17` then `winget install Apache.Maven`.
+- macOS Homebrew: `brew install openjdk@17 maven`; Ubuntu/Debian: `sudo apt install openjdk-17-jdk maven`.
+- Build from source (repo root): `mvn -q clean package` (first run downloads Maven deps to `~/.m2`), then start the app with `java -cp target/classes Main`. Run checks anytime with `mvn -q test`.
+
+resources
+
+- UML DIAGRAM: https://drive.google.com/file/d/1KDfn-AAJAlGAdKw20MNL4D0bn6htUuTp/view?usp=sharing
