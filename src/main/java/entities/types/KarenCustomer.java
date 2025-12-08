@@ -13,7 +13,7 @@ public class KarenCustomer extends Customer {
     };
     private static final String[] HAPPY_QUOTES = {
             "Well, about time.",
-            "Fine, bit the ice cubes are cut unevenly.",
+            "Fine, but the ice cubes are cut unevenly.",
             "I suppose this will do."
     };
     private static final String[] SAD_QUOTES = {
