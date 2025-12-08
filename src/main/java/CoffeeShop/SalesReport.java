@@ -15,7 +15,7 @@ public class SalesReport {
     public void updateSalesReport(Order o) {
         if(o == null) return;
 
-        this.totalSales += o.getOrderedDrink().getPrice();
+        this.totalSales += o.getPrice();
     }
 
     public void addSale(double amount) { this.totalSales += amount; }

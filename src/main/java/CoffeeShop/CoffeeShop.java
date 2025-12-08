@@ -47,7 +47,7 @@ public class CoffeeShop {
         System.out.println(receiptTxt);
 
         if (currentOrder.getStatus().equals("Completed")) {
-            salesReport.addSale(currentOrder.getServedDrink().getPrice());
+            salesReport.addSale(currentOrder.getPrice());
             manageOrder("Dequeue", null);
         }
     }
