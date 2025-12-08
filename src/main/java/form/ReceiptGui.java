@@ -25,7 +25,6 @@ public class ReceiptGui extends JFrame {
         root.setBorder(new EmptyBorder(12, 12, 12, 12));
 
         Drink drink = order.getServedDrink();
-        order.completeOrder(drink);
 
         String wanted = order.getDrinkName();
         String got = drink.getName();
@@ -37,7 +36,7 @@ public class ReceiptGui extends JFrame {
         root.add(label("Order ID: " + order.getID()));
         root.add(label("Customer: " + cust.getName()));
         root.add(label("Item: " + drink.getFullName()));
-        root.add(label(String.format("Price: %.2f", drink.getPrice())));
+        root.add(label(String.format("Price: %.2f", order.getPrice())));
         root.add(label("Calories: " + drink.getCalorie()));
         root.add(label(tip > 0 ? "Tip: " + tip : "No tip received"));
         root.add(label(reaction));
