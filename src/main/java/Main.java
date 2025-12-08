@@ -1,20 +1,41 @@
 import CoffeeShop.CoffeeShop;
 import CoffeeShop.Order;
+import UI.UI;
 import form.TempPrepareDrinkGui;
 
 import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CoffeeShop cafe = new CoffeeShop("Java Jolt");
-            Order firstOrder = cafe.spawnCustomer();
+        SwingUtilities.invokeLater(Main::showMainMenu);
+    }
 
-            TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe);
-            if (firstOrder != null) {
-                gui.SetOrder(firstOrder);
+    private static void showMainMenu() {
+        UI[] menuHolder = new UI[1];
+        UI menu = new UI(() -> {
+            UI m = menuHolder[0];
+            if (m != null) {
+                m.dispose();
             }
-            gui.setVisible(true);
+            launchGame();
+        }, () -> {
+            UI m = menuHolder[0];
+            if (m != null) {
+                m.dispose();
+            }
+            System.exit(0);
         });
+        menuHolder[0] = menu;
+    }
+
+    private static void launchGame() {
+        CoffeeShop cafe = new CoffeeShop("Java Jolt");
+        Order firstOrder = cafe.spawnCustomer();
+
+        TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe);
+        if (firstOrder != null) {
+            gui.SetOrder(firstOrder);
+        }
+        gui.setVisible(true);
     }
 }
