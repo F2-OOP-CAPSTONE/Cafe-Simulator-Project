@@ -12,7 +12,7 @@ Features
 Install / run
 
 - This project targets **Java 17** for both compilation and runtime. Make sure your `java -version` reports 17+ before running.
-- Windows package manager: `winget install OpenJDK17` then `winget install Apache.Maven`.
+- Windows package manager: `winget install OpenJDK17` or `winget install EclipseAdoptium.Temurin.17.JDK` then `winget install Apache.Maven`.
 - macOS Homebrew: `brew install openjdk@17 maven`; Ubuntu/Debian: `sudo apt install openjdk-17-jdk maven`.
 - Build from source (repo root): `mvn -q clean package` (first run downloads Maven deps to `~/.m2`).
 - Run the app directly from Maven with the bundled exec plugin: `mvn -q exec:java` (uses the configured `Main` entry point).
