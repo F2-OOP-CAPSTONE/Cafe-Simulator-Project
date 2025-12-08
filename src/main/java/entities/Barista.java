@@ -17,6 +17,8 @@ public class Barista {
         this.name = name;
         this.mixingGlass = new MixingGlass();
         this.totalTips = 0;
+        // Initialise an empty ingredient tracker so reset calls are safe even before any addIngredient calls.
+        setCOI(null);
     }
 
     public HashMap<String, Integer> serveOrder(Order order) {
@@ -61,25 +63,33 @@ public class Barista {
         return toCheck;
     }
 
-    public void addIngredient(Ingredients ing, HashMap<String,Integer> Inventory) { // to add inventory manipulation
+    public boolean addIngredient(Ingredients ing, HashMap<String,Integer> Inventory) { // to add inventory manipulation
+        if (Inventory == null) {
+            return false;
+        }
         if(currentOrderIngredients == null) setCOI(Inventory);
 
-        for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
-            if(entry.getKey().equals(ing.name())) {
-                if(entry.getValue() == 0){
-                    System.out.println("Ran out of " + entry.getKey());
-                    return;
-                }
-                entry.setValue(entry.getValue()- 1);
-                currentOrderIngredients.put(entry.getKey(), currentOrderIngredients.get(entry.getKey()) + 1);
-            }
+        Integer currentStock = Inventory.get(ing.name());
+        if (currentStock == null) {
+            return false;
         }
+        if (currentStock == 0) {
+            System.out.println("Ran out of " + ing.name());
+            return false;
+        }
+
+        Inventory.put(ing.name(), currentStock - 1);
+        currentOrderIngredients.put(ing.name(), currentOrderIngredients.get(ing.name()) + 1);
 
         System.out.println("Added " + ing);
         mixingGlass.addIngredient(ing);
+        return true;
     }
 
     public void resetIngredients(HashMap<String,Integer> Inventory){
+        if (currentOrderIngredients == null || Inventory == null) {
+            return;
+        }
         for (Map.Entry<String, Integer> entry1 : Inventory.entrySet()) {
             String key = entry1.getKey();
             int returnVal = currentOrderIngredients.get(key);

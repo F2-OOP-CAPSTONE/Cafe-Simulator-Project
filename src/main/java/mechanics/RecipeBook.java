@@ -2,27 +2,40 @@ package mechanics;
 
 import drinks.*;
 import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class  RecipeBook {
     public static DrinkType identify(List<Ingredients> ingredients) {
-        boolean hasCoffee = ingredients.contains(Ingredients.COFFEE);
-        boolean hasMilk = ingredients.contains(Ingredients.MILK);
-        boolean hasWater = ingredients.contains(Ingredients.WATER);
-        boolean hasSugar = ingredients.contains(Ingredients.SUGAR);
-        boolean hasChocolate = ingredients.contains(Ingredients.CHOCOLATE);
-        boolean hasSyrup = ingredients.contains(Ingredients.SYRUP);
-        boolean hasCaramel = ingredients.contains(Ingredients.CARAMEL);
-
-        if(hasMilk && hasCoffee && ingredients.size() == 2){
-            return DrinkType.LATTE;
-        } else if (hasCoffee && hasWater && ingredients.size() == 2){
-            return DrinkType.AMERICANO;
-        } else if (hasMilk && hasCoffee && hasWater && ingredients.size() == 3){
-            return DrinkType.CAPPUCCINO;
-        } else if (hasCoffee && hasMilk && hasSugar && hasChocolate && ingredients.size() == 4){
-            return DrinkType.MOCHA;
-        } else {
-            return DrinkType.COFFEEofSADNESSandGRIEF;
+        Map<String, Integer> counts = new HashMap<>();
+        for (Ingredients ing : Ingredients.values()) {
+            counts.put(ing.name(), 0);
         }
+        for (Ingredients ing : ingredients) {
+            counts.put(ing.name(), counts.getOrDefault(ing.name(), 0) + 1);
+        }
+
+        for (DrinkType type : DrinkType.values()) {
+            if (matchesRecipe(counts, type.getRecipe())) {
+                return type;
+            }
+        }
+        return DrinkType.COFFEEofSADNESSandGRIEF;
+    }
+
+    private static boolean matchesRecipe(Map<String, Integer> counts, HashMap<String, Integer> recipe) {
+        Set<String> keys = new HashSet<>(counts.keySet());
+        keys.addAll(recipe.keySet());
+
+        for (String key : keys) {
+            int expected = recipe.getOrDefault(key, 0);
+            int actual = counts.getOrDefault(key, 0);
+            if (actual != expected) {
+                return false;
+            }
+        }
+        return true;
     }
 }

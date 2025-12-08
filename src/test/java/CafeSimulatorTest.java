@@ -61,6 +61,9 @@ class CafeSimulatorTest {
     void recipeBookIdentifiesLatte() {
         List<Ingredients> ingredients = new ArrayList<>();
         ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.MILK);
         ingredients.add(Ingredients.MILK);
 
         assertEquals(DrinkType.LATTE, RecipeBook.identify(ingredients));
@@ -85,7 +88,7 @@ class CafeSimulatorTest {
             inventory.put(ing.name(), 1);
         }
 
-        barista.addIngredient(Ingredients.COFFEE, inventory);
+        assertTrue(barista.addIngredient(Ingredients.COFFEE, inventory));
 
         assertEquals(0, inventory.get("COFFEE"));
     }
@@ -105,5 +108,30 @@ class CafeSimulatorTest {
 
         assertEquals("Completed", order.getStatus());
         assertEquals(0, shop.getOrders().size());
+    }
+
+    @Test
+    void recipeBookMatchesByCounts() {
+        List<Ingredients> ingredients = new ArrayList<>();
+        ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.COFFEE);
+        ingredients.add(Ingredients.MILK);
+        ingredients.add(Ingredients.MILK);
+
+        assertEquals(DrinkType.LATTE, RecipeBook.identify(ingredients));
+    }
+
+    @Test
+    void baristaResetIsSafeBeforeAdds() {
+        Barista barista = new Barista("Test");
+        HashMap<String, Integer> inventory = new HashMap<>();
+        for (Ingredients ing : Ingredients.values()) {
+            inventory.put(ing.name(), 1);
+        }
+
+        assertDoesNotThrow(() -> barista.resetIngredients(inventory));
+        // inventory should remain unchanged because nothing was added
+        assertEquals(1, inventory.get("COFFEE"));
     }
 }

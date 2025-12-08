@@ -26,6 +26,8 @@ public class TempPrepareDrinkGui extends JFrame {
     private JLabel chocoCount;
     private JLabel syrupCount;
 
+    private JButton confirmButton;
+
     private int coffeeAmnt = 0;
     private int milkAmnt = 0;
     private int waterAmnt = 0;
@@ -90,7 +92,7 @@ public class TempPrepareDrinkGui extends JFrame {
         addCountAndButton(grid, gbc, 2, 2, syrupCount, "Syrup", Ingredients.SYRUP, () -> syrupAmnt++, () -> syrupAmnt);
 
         // Confirm + Reset row
-        JButton confirmButton = new JButton("Confirm");
+        confirmButton = new JButton("Confirm");
         confirmButton.addActionListener(this::onConfirm);
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(this::onReset);
@@ -134,15 +136,25 @@ public class TempPrepareDrinkGui extends JFrame {
     }
 
     private void addIngredient(Ingredients ing, Runnable increment, java.util.function.IntSupplier valueSup, JLabel label) {
-        cafe.getBarista().addIngredient(ing, cafe.getInventory());
-        increment.run();
-        label.setText(Integer.toString(valueSup.getAsInt()));
-        repaint();
+        boolean added = cafe.getBarista().addIngredient(ing, cafe.getInventory());
+        if (added) {
+            increment.run();
+            label.setText(Integer.toString(valueSup.getAsInt()));
+            repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, "Cannot add more " + ing.name() + " (out of stock).", "Inventory", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void onConfirm(ActionEvent e) {
         if (order == null) return;
+        int totalAdded = coffeeAmnt + milkAmnt + waterAmnt + sugarAmnt + chocoAmnt + syrupAmnt;
+        if (totalAdded == 0) {
+            JOptionPane.showMessageDialog(this, "Add at least one ingredient before serving.", "No Ingredients", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         cafe.serveDrink(); // uses barista’s built drink
+        confirmButton.setEnabled(false);
         receiptGui = new ReceiptGui(order);
         receiptGui.setVisible(true);
         receiptGui.getServeNextButton().addActionListener(evt -> {
@@ -205,6 +217,9 @@ public class TempPrepareDrinkGui extends JFrame {
             customerInfoLabel.setText("Waiting for customer...");
             customerMsgLabel.setText("");
             orderLabel.setText("");
+        }
+        if (confirmButton != null) {
+            confirmButton.setEnabled(order != null);
         }
         coffeeCount.setText(Integer.toString(coffeeAmnt));
         milkCount.setText(Integer.toString(milkAmnt));
