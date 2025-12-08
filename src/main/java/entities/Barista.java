@@ -88,6 +88,29 @@ public class Barista {
         }
     }
 
+    public String checkInventory(HashMap<String, Integer> inventory) {
+        if (inventory == null || inventory.isEmpty()) {
+            return "No inventory data available.";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            builder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return builder.toString().trim();
+    }
+
+    public String restockInventory(HashMap<String, Integer> inventory) {
+        if (inventory == null || inventory.isEmpty()) {
+            return "No inventory to restock.";
+        }
+
+        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
+            entry.setValue(50);
+        }
+        return "Inventory restocked.";
+    }
+
     public double getTotalTips() { return totalTips; }
 
     private void setCOI(HashMap<String,Integer> Inv){

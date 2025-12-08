@@ -47,8 +47,8 @@ public class TempPrepareDrinkGui extends JFrame {
     private void buildUi() {
         JPanel root = new JPanel(new BorderLayout(0, 10));
         root.setBorder(new EmptyBorder(12, 12, 12, 12));
-        root.setPreferredSize(new Dimension(360, 260));
-        root.setMinimumSize(new Dimension(340, 240));
+        root.setPreferredSize(new Dimension(420, 360));
+        root.setMinimumSize(new Dimension(380, 320));
 
         // Customer info (left-aligned, multi-line friendly via HTML)
         JPanel info = new JPanel();
@@ -94,12 +94,18 @@ public class TempPrepareDrinkGui extends JFrame {
         confirmButton.addActionListener(this::onConfirm);
         JButton resetButton = new JButton("Reset");
         resetButton.addActionListener(this::onReset);
+        JButton checkInventoryButton = new JButton("Check Inventory");
+        checkInventoryButton.addActionListener(this::onCheckInventory);
 
         gbc.gridy = 4;
         gbc.gridx = 0;
         grid.add(confirmButton, gbc);
         gbc.gridx = 2;
         grid.add(resetButton, gbc);
+
+        gbc.gridy = 5;
+        gbc.gridx = 0;
+        grid.add(checkInventoryButton, gbc);
 
         root.add(grid, BorderLayout.CENTER);
         setContentPane(root);
@@ -154,6 +160,36 @@ public class TempPrepareDrinkGui extends JFrame {
         resetCounts();
         updateContent();
         pack();
+    }
+
+    private void onCheckInventory(ActionEvent e) {
+        JDialog dialog = new JDialog(this, "Inventory", true);
+        dialog.setLayout(new BorderLayout(12, 12));
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        JLabel inventoryLabel = new JLabel(html(cafe.getBarista().checkInventory(cafe.getInventory())));
+        inventoryLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        dialog.add(inventoryLabel, BorderLayout.CENTER);
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        JButton restockButton = new JButton("Restock Inventory");
+        restockButton.addActionListener(evt -> {
+            String report = cafe.getBarista().restockInventory(cafe.getInventory());
+            inventoryLabel.setText(html(report));
+            updateContent();
+            dialog.pack();
+        });
+
+        JButton backButton = new JButton("Back to Customer");
+        backButton.addActionListener(evt -> dialog.dispose());
+
+        buttons.add(restockButton);
+        buttons.add(backButton);
+        dialog.add(buttons, BorderLayout.SOUTH);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void resetCounts() {
