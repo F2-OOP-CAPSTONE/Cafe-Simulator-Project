@@ -31,10 +31,10 @@ public class CoffeeShop {
         return newOrder;
     }
 
-    public void serveDrink() {
+    public Order serveDrink() {
         if (orders.isEmpty()) {
             System.out.println("No orders to serve.");
-            return;
+            return null;
         }
 
         Order currentOrder = orders.getFirst();
@@ -48,8 +48,12 @@ public class CoffeeShop {
 
         if (currentOrder.getStatus().equals("Completed")) {
             salesReport.addSale(currentOrder.getPrice());
+            salesReport.incrementCustomerServedCount();
             manageOrder("Dequeue", null);
+            return currentOrder;
         }
+
+        return null;
     }
 
     public void checkInventory(){
@@ -208,7 +212,7 @@ public class CoffeeShop {
 
     public void printEndOfDayReport() {
         System.out.println("\n=== END OF DAY REPORT ===");
-        System.out.println("Total Customers Served: " + orders.size());
+        System.out.println("Total Customers Served: " + salesReport.getCustomerServedCount());
         System.out.println("Total Revenue: $" + String.format("%.2f", salesReport.getTotalSales()));
         System.out.println("Total Tips:    $" + String.format("%.2f", barista.getTotalTips()));
     }

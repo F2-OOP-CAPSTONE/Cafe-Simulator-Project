@@ -10,6 +10,7 @@ public class SalesReport {
 
     public SalesReport() {
         totalSales = 0;
+        customerServedCount = 0;
     }
 
     public void updateSalesReport(Order o) {
@@ -20,4 +21,6 @@ public class SalesReport {
 
     public void addSale(double amount) { this.totalSales += amount; }
     public double getTotalSales() { return totalSales; }
+    public void incrementCustomerServedCount() { this.customerServedCount++; }
+    public int getCustomerServedCount() { return customerServedCount; }
 }
