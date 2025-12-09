@@ -1,20 +1,29 @@
 package CoffeeShop;
 
-import entities.*;
 import drinks.*;
-import mechanics.*;
-
+import mechanics.MixingGlass;
+import entities.Barista;
+import entities.Customer;
+import entities.CustomerGeneration;
 import java.util.*;
 
 public class CoffeeShop {
     public final String name;
+
+    // Core Systems
     private Barista barista;
     private LinkedList<Order> orders;
     private SalesReport salesReport;
+    private MixingGlass mixingGlass;
     private int nextOrderId = 1;
     private ArrayList<String> menu = new ArrayList<>(Arrays.asList("Latte", "Americano", "Cappuccino", "Mocha", "Coffee of all Sadness and Grief"));
     private ArrayList<String> INGS = new ArrayList<>(Arrays.asList("COFFEE", "MILK", "WATER", "SUGAR", "CHOCOLATE", "SYRUP", "CARAMEL"));
-    private HashMap<String, Integer> Inventory;
+    private HashMap<Ingredients, Integer> Inventory;
+
+    // Economy and Inventory
+    private double currentBalance = 100.00;
+    private double dailyTax = 10.00;
+    private final double TAX_INCREASE = 5.00;
 
     // New Variables: Day Cycle
     private int currentDay = 1;
@@ -25,11 +34,17 @@ public class CoffeeShop {
         this.name = name;
         this.orders = new LinkedList<>();
         this.salesReport = new SalesReport();
-        setBarista();
-        setInventory(INGS);
-    }
-    // -- GAME LOOP --
 
+        this.barista = new Barista(setBarista());
+        this.mixingGlass = new MixingGlass();
+
+        this.Inventory = new HashMap<>();
+        for (Ingredients ing : Ingredients.values()) {
+            Inventory.put(ing, 20);
+        }
+    }
+
+    // -- GAME LOOP --
     public Order spawnCustomer() {
         Customer customer = CustomerGeneration.spawnRandomCustomer();
         Order newOrder = new Order(nextOrderId++, customer);
@@ -37,40 +52,85 @@ public class CoffeeShop {
         return newOrder;
     }
 
-    public Order serveDrink() {
-        if (orders.isEmpty()) {
-            System.out.println("No orders to serve.");
-            return null;
+    public boolean addIngredient(Ingredients ing) {
+        int currentStock = Inventory.getOrDefault(ing, 0);
+
+        if (currentStock > 0) {
+            Inventory.put(ing, currentStock - 1);
+
+            mixingGlass.addIngredient(ing);
+            System.out.println("Added " + ing + ". Stock remaining: " + (currentStock - 1));
+            return true;
+        } else {
+            System.out.println("!!! OUT OF STOCK: " + ing + " !!!");
+            return false;
         }
+    }
+
+    public void resetMixingGlass() {
+        this.mixingGlass = new MixingGlass();
+        System.out.println("mixing Glass Emptied (Ingredients Wasted)");
+    }
+
+    // Convenience overload for existing callers
+    public Order serveDrink() {
+        return serveDrink(DrinkSize.MEDIUM);
+    }
+
+    public Order serveDrink(DrinkSize size) {
+        if (orders.isEmpty()) { return null; }
 
         Order currentOrder = orders.getFirst();
 
-        HashMap<String, Integer> res = barista.serveOrder(currentOrder);
-        evaluateServedDrink(currentOrder, res, currentOrder.getOrderedDrink().getType().getRecipe());
+        Drink finalDrink = mixingGlass.finishDrink(size);
+        barista.serveOrder(currentOrder, finalDrink);
 
-        System.out.printf("Price: %.2f", currentOrder.getPrice());
         String receiptTxt = Receipt.printReceipt(currentOrder);
         System.out.println(receiptTxt);
 
         if (currentOrder.getStatus().equals("Completed")) {
-            salesReport.addSale(currentOrder.getPrice());
-            salesReport.incrementCustomerServedCount();
+            double price = currentOrder.getPrice();
 
+            if (price > 0) {
+                currentBalance += price;
+                salesReport.addSale(price);
+            }
+
+            salesReport.incrementCustomerServedCount();
             customerServedToday++;
 
-            manageOrder("Dequeue", null);
-            return currentOrder;
+            manageOrder("Dequeue", currentOrder);
         }
+        return currentOrder;
+    }
 
-        return null;
+    public String restockInventory() {
+        double cost = 5.00;
+        int amount = 10;
+
+        if (currentBalance >= cost) {
+            currentBalance -= cost;
+            for (Map.Entry<Ingredients, Integer> entry : Inventory.entrySet()) {
+                entry.setValue(entry.getValue() + amount);
+            }
+            return "Restocked all items. Paid $" + String.format("%.2f", cost);
+        } else {
+            return "Insufficient funds! Need $" + String.format("%.2f", cost);
+        }
     }
 
     // -------------- New Day Cycle Method ------------------
     public boolean isDayFinished() {
-        return customerServedToday == CUSTOMER_PER_DAY;
+        return customerServedToday >= CUSTOMER_PER_DAY;
     }
 
     public void startNextDay() {
+        System.out.println("\n>>> END OF DAY " + currentDay);
+        System.out.println(("Tax Man collects: $" + dailyTax));
+
+        currentBalance -= dailyTax;
+        dailyTax += TAX_INCREASE;
+
         currentDay++;
         customerServedToday = 0;
         System.out.println(">>Starting Day " + currentDay);
@@ -81,148 +141,25 @@ public class CoffeeShop {
     }
 
     public String getDaySummary() {
+        String status = (currentBalance < 0) ? "BANKRUPT" : "SOLVENT";
         return "<html><center><h2>Day " + currentDay + " Complete!</h2>" +
                 "Customers Served Today: " + customerServedToday + "<br>" +
+                "Tax Paid: $" + String.format("%.2f", (dailyTax)) + "<br>" +
                 "Total Revenue: $" + String.format("%.2f", salesReport.getTotalSales()) + "<br>" +
-                "Barista Tips: $" + String.format("%.2f", barista.getTotalTips()) + "</center></html>";
+                "Barista Tips: $" + String.format("%.2f", barista.getTotalTips()) + "<br>" +
+                "Current Balance: $" + String.format("%.2f", currentBalance) + "<br>" +
+                "Financial Status: <b>" + status + "</b></center></html>";
     }
 
     // --------------------------------------------------------
 
-    public void checkInventory(){
-        for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
-            String DrinkName = entry.getKey();
-            Integer Amount = entry.getValue();
-            System.out.println(DrinkName + ": " + Amount);
+    public String getInventoryString(){
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Ingredients, Integer> entry : Inventory.entrySet()) {
+            sb.append(entry.getKey().getName()).append(": ").append(entry.getValue()).append("\n");
         }
+        return sb.toString();
     }
-
-    public boolean restockInventory() {
-        Scanner sc = new Scanner(System.in);
-        ArrayList<String> s = new ArrayList<>(Arrays.asList("first", "second", "third"));
-        ArrayList<Ingredients> e = new ArrayList<>();
-        ArrayList<Integer> n = new ArrayList<>();
-
-        for (int i = 0; i < 3; i++) {
-            System.out.println("\nEnter " + s.get(i) + " ingredient to restock");
-            System.out.println("[1] Coffee      [2] Milk               [3] Water");
-            System.out.println("[4] Sugar       [5] Chocolate          [6] Syrup");
-            int opt = 0;
-
-            while (opt < 1 || opt > 6) {
-                System.out.print("Select Ingredient: ");
-                opt = sc.nextInt();
-                switch (opt) {
-                    case 1:
-                        e.add(Ingredients.COFFEE);
-                        break;
-                    case 2:
-                        e.add(Ingredients.MILK);
-                        break;
-                    case 3:
-                        e.add(Ingredients.WATER);
-                        break;
-                    case 4:
-                        e.add(Ingredients.SUGAR);
-                        break;
-                    case 5:
-                        e.add(Ingredients.CHOCOLATE);
-                        break;
-                    case 6:
-                        e.add(Ingredients.SYRUP);
-                        break;
-                    default:
-                        System.out.println("Invalid Choice!");
-                }
-            }
-
-            int amount = 0;
-            while (amount < 1 || amount > 10){
-                System.out.print("Enter amount: ");
-                amount = sc.nextInt();
-                if(amount < 1 || amount > 10){
-                    System.out.println("Amount must not be less than 1 or greater than 10!");
-                    continue;
-                }
-                n.add(amount);
-                sc.nextLine();
-            }
-        }
-
-        for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(e.get(0).name())) {
-                entry.setValue(entry.getValue() + n.get(0));
-            }
-            if (entry.getKey().equalsIgnoreCase(e.get(1).name())) {
-                entry.setValue(entry.getValue() + n.get(1));
-            }
-            if (entry.getKey().equalsIgnoreCase(e.get(2).name())) {
-                entry.setValue(entry.getValue() + n.get(2));
-            }
-        }
-        return true;
-    }
-
-
-
-
-    public void peekQueue(){
-        for(Order o : orders){
-            System.out.println(o.getCustomer().getName() + " ordered " + o.getDrinkName());
-        }
-    }
-
-
-
-//    public void startNextTurn() {
-//        // Spawn customer
-//        Customer customer = CustomerGeneration.spawnRandomCustomer();
-////        System.out.println("Customer says: \"" + customer.getDialogue() + "\"");
-//
-//        // Create order
-//        Order newOrder = new Order(orders.size() + 1, customer);
-//        orders.add(newOrder);
-//
-//        // Player action (SIMULATION PROTOTYPE)
-//        Drink preparedDrink = simulateMakingDrink(newOrder.getDrinkName());
-//
-//        barista.serveOrder(newOrder, preparedDrink);
-//
-//        // generate recepit and update salesreport
-//        String receiptTxt = Receipt.printReceipt(newOrder);
-//        System.out.println(receiptTxt);
-//
-//        if(newOrder.getStatus().equals("Completed")) {
-//            salesReport.addSale(newOrder.getServedDrink().getPrice());
-//        }
-//    }
-//
-//    // simulate the mixing process
-//    private Drink simulateMakingDrink(String requestedName) {
-//        MixingGlass glass = new MixingGlass();
-//
-//        if(requestedName.equals("Latte")) {
-//            glass.addIngredient(Ingredients.COFFEE);
-//            glass.addIngredient(Ingredients.MILK);
-//        } else if(requestedName.equals("Americano")) {
-//            glass.addIngredient(Ingredients.COFFEE);
-//            glass.addIngredient(Ingredients.WATER);
-//        } else if(requestedName.equals("Cappuccino")) {
-//            glass.addIngredient(Ingredients.COFFEE);
-//            glass.addIngredient(Ingredients.MILK);
-//            glass.addIngredient(Ingredients.WATER);
-//        } else if(requestedName.equals("Mocha")) {
-//            glass.addIngredient(Ingredients.COFFEE);
-//            glass.addIngredient(Ingredients.MILK);
-//            glass.addIngredient(Ingredients.SUGAR);
-//            glass.addIngredient(Ingredients.CHOCOLATE);
-//        } else {
-//            glass.addIngredient(Ingredients.WATER);
-//            glass.addIngredient(Ingredients.SUGAR);
-//        }
-//
-//        return glass.finishDrink(DrinkSize.MEDIUM);
-//    }
 
     public void manageOrder(String action, Order o){ // Order Queue Action
         if(action == null){
@@ -243,34 +180,13 @@ public class CoffeeShop {
         else System.out.println("Invalid Action");
     }
 
-    public void printEndOfDayReport() {
-        System.out.println("\n=== END OF DAY REPORT ===");
-        System.out.println("Total Customers Served: " + salesReport.getCustomerServedCount());
-        System.out.println("Total Revenue: $" + String.format("%.2f", salesReport.getTotalSales()));
-        System.out.println("Total Tips:    $" + String.format("%.2f", barista.getTotalTips()));
-    }
-
-
 
     public Barista getBarista() {return barista;}
-    public ArrayList<String> getMenu() {return menu;}
     public LinkedList<Order> getOrders() {return orders;}
-    public HashMap<String, Integer> getInventory() { return Inventory; }
+    public HashMap<Ingredients, Integer> getInventory() { return Inventory; }
+    public double getCurrentBalance() { return currentBalance; }
 
-    //
-//    public void manageMenu(String item, char action){
-//        if(action == 'r'){
-//            if(menu.contains(item)) menu.remove(item);
-//            else System.out.println("Item not found");
-//        }
-//        else if(action == 'a'){
-//            menu.add(item);
-//        }
-//        else System.out.println("Invalid Action");
-//    }
-//
-
-    private void setBarista(){
+    private String setBarista(){
         String[] NAMES = {
                 "Kenji", "Julius", "Kharl", "Patrick",
                 "Isaiah", "Alexis", "Kylle", "Earl",
@@ -289,29 +205,6 @@ public class CoffeeShop {
         Random random = new Random();
         String randomName = NAMES[random.nextInt(NAMES.length)];
 
-        this.barista = new Barista(randomName);
+        return randomName;
     }
-
-    private void setInventory(ArrayList<String> INGS){
-        Inventory = new HashMap<>();
-        for(String s : INGS){
-            Inventory.put(s, 50);
-        }
-    }
-
-    private void evaluateServedDrink(Order o, HashMap<String, Integer> ServedDrink, HashMap<String, Integer> OrderedDrink){
-        if (ServedDrink == null || OrderedDrink == null) {
-            return;
-        }
-
-        for (Map.Entry<String, Integer> entry1 : ServedDrink.entrySet()) {
-            String key = entry1.getKey();
-            int value1 = entry1.getValue();
-            int value2 = OrderedDrink.getOrDefault(key.toUpperCase(), OrderedDrink.getOrDefault(key, 0));
-            if(value1 != value2)  o.setPrice(o.getPrice() - 1.5);
-        }
-    }
-
-
-
 }

@@ -25,15 +25,14 @@ public class TempPrepareDrinkGui extends JFrame {
     private JLabel customerInfoLabel;
     private JLabel customerMsgLabel;
     private JLabel orderLabel;
-
     private JLabel coffeeCount;
     private JLabel milkCount;
     private JLabel waterCount;
     private JLabel sugarCount;
     private JLabel chocoCount;
     private JLabel syrupCount;
-
     private JButton confirmButton;
+    private JButton recipeButton;
 
     private int coffeeAmnt = 0;
     private int milkAmnt = 0;
@@ -41,8 +40,6 @@ public class TempPrepareDrinkGui extends JFrame {
     private int sugarAmnt = 0;
     private int chocoAmnt = 0;
     private int syrupAmnt = 0;
-
-    private JButton recipeButton;
 
     public TempPrepareDrinkGui(CoffeeShop cafe) {
         this.cafe = cafe;
@@ -144,6 +141,17 @@ public class TempPrepareDrinkGui extends JFrame {
         setContentPane(root);
     }
 
+    private void addIngredient(Ingredients ing, Runnable increment, java.util.function.IntSupplier valueSup, JLabel label) {
+        boolean added = cafe.addIngredient(ing);
+        if (added) {
+            increment.run();
+            label.setText(Integer.toString(valueSup.getAsInt()));
+            repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, "Cannot add more " + ing.name() + " (out of stock).", "Inventory", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
     private JLabel centeredLabel(String text) {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
         label.setPreferredSize(new Dimension(68, 20));
@@ -171,32 +179,18 @@ public class TempPrepareDrinkGui extends JFrame {
         grid.add(b, gbc);
     }
 
-    private void addIngredient(Ingredients ing, Runnable increment, java.util.function.IntSupplier valueSup, JLabel label) {
-        boolean added = cafe.getBarista().addIngredient(ing, cafe.getInventory());
-        if (added) {
-            increment.run();
-            label.setText(Integer.toString(valueSup.getAsInt()));
-            repaint();
-        } else {
-            JOptionPane.showMessageDialog(this, "Cannot add more " + ing.name() + " (out of stock).", "Inventory", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
     private void onConfirm(ActionEvent e) {
         if (order == null) return;
-        int totalAdded = coffeeAmnt + milkAmnt + waterAmnt + sugarAmnt + chocoAmnt + syrupAmnt;
-        if (totalAdded == 0) {
-            JOptionPane.showMessageDialog(this, "Add at least one ingredient before serving.", "No Ingredients", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        cafe.serveDrink(); // uses barista’s built drink
+
+        // Default to Medium size for now since we don't have UI buttons for size yet
+        cafe.serveDrink(DrinkSize.MEDIUM);
+
         confirmButton.setEnabled(false);
         receiptGui = new ReceiptGui(order);
         receiptGui.setVisible(true);
 
         //-- Updated Day Cycle Logic --
         receiptGui.getServeNextButton().addActionListener(evt -> {
-            receiptGui.setVisible(false);
             receiptGui.dispose();
             if (cafe.isDayFinished()) {
                 DayCompleteOverlay.show(this, cafe.getDaySummary(), () -> {
@@ -214,7 +208,7 @@ public class TempPrepareDrinkGui extends JFrame {
     }
 
     private void onReset(ActionEvent e) {
-        cafe.getBarista().resetIngredients(cafe.getInventory());
+        cafe.resetMixingGlass();
         resetCounts();
         updateContent();
         pack();
@@ -249,8 +243,9 @@ public class TempPrepareDrinkGui extends JFrame {
         buttons.setOpaque(false);
         JButton restockButton = primaryButton("Restock Inventory");
         restockButton.addActionListener(evt -> {
-            String report = cafe.getBarista().restockInventory(cafe.getInventory());
-            inventoryLabel.setText(html(report));
+            String report = cafe.restockInventory();
+            inventoryLabel.setText(html(cafe.getInventoryString()));
+            JOptionPane.showMessageDialog(dialog, report);
             updateContent();
             dialog.pack();
         });
