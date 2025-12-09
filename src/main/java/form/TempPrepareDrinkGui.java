@@ -157,11 +157,21 @@ public class TempPrepareDrinkGui extends JFrame {
         confirmButton.setEnabled(false);
         receiptGui = new ReceiptGui(order);
         receiptGui.setVisible(true);
+
+        //-- Updated Day Cycle Logic --
         receiptGui.getServeNextButton().addActionListener(evt -> {
+            receiptGui.setVisible(false);
+            receiptGui.dispose();
+            if(cafe.isDayFinished()) {
+                JOptionPane.showMessageDialog(this,
+                        cafe.getDaySummary(),
+                        "Day Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+                cafe.startNextDay();
+            }
             order = cafe.spawnCustomer();
             resetCounts();
             updateContent();
-            receiptGui.setVisible(false);
             // re-pack to ensure layout fits after text changes
             pack();
         });
