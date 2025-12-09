@@ -11,7 +11,7 @@ public class Receipt {
         sb.append("Order ID: #").append(order.getID()).append("\n");
         sb.append("Customer: ").append(order.getCustomer().getName()).append("\n");
         sb.append("-----------------------------\n");
-
+        
         if(drink != null) {
             sb.append("Item:        ").append(drink.getFullName()).append("\n");
             sb.append("Price:       Php").append(String.format("%.2f", order.getPrice())).append("\n");

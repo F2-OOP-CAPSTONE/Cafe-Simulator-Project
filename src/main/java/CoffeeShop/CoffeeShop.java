@@ -11,6 +11,7 @@ public class CoffeeShop {
     private Barista barista;
     private LinkedList<Order> orders;
     private SalesReport salesReport;
+    private int nextOrderId = 1;
     private ArrayList<String> menu = new ArrayList<>(Arrays.asList("Latte", "Americano", "Cappuccino", "Mocha", "Coffee of all Sadness and Grief"));
     private ArrayList<String> INGS = new ArrayList<>(Arrays.asList("COFFEE", "MILK", "WATER", "SUGAR", "CHOCOLATE", "SYRUP", "CARAMEL"));
     private HashMap<String, Integer> Inventory;
@@ -26,7 +27,7 @@ public class CoffeeShop {
 
     public Order spawnCustomer() {
         Customer customer = CustomerGeneration.spawnRandomCustomer();
-        Order newOrder = new Order(orders.size() + 1, customer);
+        Order newOrder = new Order(nextOrderId++, customer);
         manageOrder("Enqueue", newOrder);
         return newOrder;
     }
