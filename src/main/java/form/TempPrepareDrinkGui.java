@@ -42,6 +42,8 @@ public class TempPrepareDrinkGui extends JFrame {
     private int chocoAmnt = 0;
     private int syrupAmnt = 0;
 
+    private JButton recipeButton;
+
     public TempPrepareDrinkGui(CoffeeShop cafe) {
         this.cafe = cafe;
         buildUi();
@@ -121,6 +123,11 @@ public class TempPrepareDrinkGui extends JFrame {
         JButton checkInventoryButton = secondaryButton("Check Inventory");
         checkInventoryButton.addActionListener(this::onCheckInventory);
 
+        recipeButton = secondaryButton("Recipes");
+        recipeButton.addActionListener(e -> {
+            new Recipe().setVisible(true);
+        });
+
         gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -129,6 +136,7 @@ public class TempPrepareDrinkGui extends JFrame {
         buttons.setOpaque(false);
         buttons.add(checkInventoryButton);
         buttons.add(resetButton);
+        buttons.add(recipeButton);
         buttons.add(confirmButton);
         grid.add(buttons, gbc);
 
