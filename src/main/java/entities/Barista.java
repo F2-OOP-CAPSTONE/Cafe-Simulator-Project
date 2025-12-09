@@ -40,9 +40,10 @@ public class Barista {
             System.out.println("// " + cust.getHappyReaction());
         } else {
             System.out.println("// " + cust.getSadReaction());
-            if(order.getCustomer() instanceof KarenCustomer) order.setPrice(0);
-            else if(order.getCustomer() instanceof RichCustomer) order.setPrice(order.getPrice() * 0.75);
-            else order.setPrice(order.getPrice() / 2);
+            order.setPrice(0.0);
+//            if(order.getCustomer() instanceof KarenCustomer) order.setPrice(0);
+//            else if(order.getCustomer() instanceof RichCustomer) order.setPrice(order.getPrice() * 0.75);
+//            else order.setPrice(order.getPrice() / 2);
         }
 
         int tip = order.getCustomer().reactToDrink(drink, wanted);

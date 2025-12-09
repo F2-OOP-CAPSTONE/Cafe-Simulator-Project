@@ -15,6 +15,11 @@ public class CoffeeShop {
     private ArrayList<String> INGS = new ArrayList<>(Arrays.asList("COFFEE", "MILK", "WATER", "SUGAR", "CHOCOLATE", "SYRUP", "CARAMEL"));
     private HashMap<String, Integer> Inventory;
 
+    // New Variables: Day Cycle
+    private int currentDay = 1;
+    private int customerServedToday = 0;
+    private final int CUSTOMER_PER_DAY = 5;
+
     public CoffeeShop(String name) {
         this.name = name;
         this.orders = new LinkedList<>();
@@ -49,12 +54,35 @@ public class CoffeeShop {
         if (currentOrder.getStatus().equals("Completed")) {
             salesReport.addSale(currentOrder.getPrice());
             salesReport.incrementCustomerServedCount();
+
+            customerServedToday++;
+
             manageOrder("Dequeue", null);
             return currentOrder;
         }
 
         return null;
     }
+
+    // -------------- New Day Cycle Method ------------------
+    public boolean isDayFinished() {
+        return customerServedToday == CUSTOMER_PER_DAY;
+    }
+
+    public void startNextDay() {
+        currentDay++;
+        customerServedToday = 0;
+        System.out.println(">>Starting Day " + currentDay);
+    }
+
+    public String getDaySummary() {
+        return "<html><center><h2>Day " + currentDay + " Complete!</h2>" +
+                "Customers Served Today: " + customerServedToday + "<br>" +
+                "Total Revenue: $" + String.format("%.2f", salesReport.getTotalSales()) + "<br>" +
+                "Barista Tips: $" + String.format("%.2f", barista.getTotalTips()) + "</center></html>";
+    }
+
+    // --------------------------------------------------------
 
     public void checkInventory(){
         for (Map.Entry<String, Integer> entry : Inventory.entrySet()) {
