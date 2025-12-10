@@ -2,11 +2,15 @@ package form;
 
 import CoffeeShop.CoffeeShop;
 import CoffeeShop.Order;
-import drinks.DrinkSize;
+import UI.BackgroundPanel;
+import form.DayStartOverlay;
+import form.DayCompleteOverlay;
 import drinks.Ingredients;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -14,6 +18,9 @@ public class TempPrepareDrinkGui extends JFrame {
     private final CoffeeShop cafe;
     private Order order;
     private ReceiptGui receiptGui;
+
+    private final Color wood = new Color(0x6F4F28);
+    private final Color parchment = new Color(0xF8F1E0);
 
     private JLabel customerInfoLabel;
     private JLabel customerMsgLabel;
@@ -47,18 +54,32 @@ public class TempPrepareDrinkGui extends JFrame {
     }
 
     private void buildUi() {
-        JPanel root = new JPanel(new BorderLayout(0, 10));
-        root.setBorder(new EmptyBorder(12, 12, 12, 12));
-        root.setPreferredSize(new Dimension(420, 360));
-        root.setMinimumSize(new Dimension(380, 320));
+        BackgroundPanel root = new BackgroundPanel("src/Images/Menu.png");
+        root.setLayout(new BorderLayout(0, 14));
+        root.setPreferredSize(new Dimension(960, 540));
+
+        JPanel overlay = new JPanel(new BorderLayout(0, 14));
+        overlay.setOpaque(false);
+        overlay.setBorder(new EmptyBorder(18, 18, 18, 18));
+        root.add(overlay, BorderLayout.CENTER);
+
+        JPanel card = new JPanel(new BorderLayout(0, 14));
+        card.setOpaque(true);
+        card.setBackground(new Color(parchment.getRed(), parchment.getGreen(), parchment.getBlue(), 210));
+        card.setBorder(new CompoundBorder(
+                new LineBorder(wood, 3, true),
+                new EmptyBorder(18, 18, 18, 18)
+        ));
+        overlay.add(card, BorderLayout.CENTER);
 
         // Customer info (left-aligned, multi-line friendly via HTML)
         JPanel info = new JPanel();
+        info.setOpaque(false);
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setAlignmentX(Component.LEFT_ALIGNMENT);
-        customerInfoLabel = new JLabel("NEW CUSTOMER:");
-        customerMsgLabel = new JLabel("");
-        orderLabel = new JLabel("ORDER:");
+        customerInfoLabel = accentLabel("NEW CUSTOMER:");
+        customerMsgLabel = accentLabel("");
+        orderLabel = accentLabel("ORDER:");
         customerInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         customerMsgLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         orderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -67,7 +88,7 @@ public class TempPrepareDrinkGui extends JFrame {
         info.add(customerMsgLabel);
         info.add(Box.createVerticalStrut(4));
         info.add(orderLabel);
-        root.add(info, BorderLayout.NORTH);
+        card.add(info, BorderLayout.NORTH);
 
         // Ingredient controls laid out in a stable GridBag to prevent overflow
         coffeeCount = centeredLabel("0");
@@ -78,8 +99,9 @@ public class TempPrepareDrinkGui extends JFrame {
         syrupCount = centeredLabel("0");
 
         JPanel grid = new JPanel(new GridBagLayout());
+        grid.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 10, 4, 10);
+        gbc.insets = new Insets(6, 12, 6, 12);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
@@ -92,30 +114,36 @@ public class TempPrepareDrinkGui extends JFrame {
         addCountAndButton(grid, gbc, 2, 2, syrupCount, "Syrup", Ingredients.SYRUP, () -> syrupAmnt++, () -> syrupAmnt);
 
         // Confirm + Reset row
-        confirmButton = new JButton("Confirm");
+        confirmButton = primaryButton("Serve Drink");
         confirmButton.addActionListener(this::onConfirm);
-        JButton resetButton = new JButton("Reset");
+        JButton resetButton = secondaryButton("Reset");
         resetButton.addActionListener(this::onReset);
-        JButton checkInventoryButton = new JButton("Check Inventory");
+        JButton checkInventoryButton = secondaryButton("Check Inventory");
         checkInventoryButton.addActionListener(this::onCheckInventory);
 
         gbc.gridy = 4;
         gbc.gridx = 0;
-        grid.add(confirmButton, gbc);
-        gbc.gridx = 2;
-        grid.add(resetButton, gbc);
+        gbc.gridwidth = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        buttons.setOpaque(false);
+        buttons.add(checkInventoryButton);
+        buttons.add(resetButton);
+        buttons.add(confirmButton);
+        grid.add(buttons, gbc);
 
-        gbc.gridy = 5;
-        gbc.gridx = 0;
-        grid.add(checkInventoryButton, gbc);
-
-        root.add(grid, BorderLayout.CENTER);
+        card.add(grid, BorderLayout.CENTER);
         setContentPane(root);
     }
 
     private JLabel centeredLabel(String text) {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
-        label.setPreferredSize(new Dimension(60, 16));
+        label.setPreferredSize(new Dimension(68, 20));
+        label.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        label.setOpaque(true);
+        label.setBackground(new Color(0xF1E5C8));
+        label.setForeground(new Color(0x4A3422));
+        label.setBorder(new LineBorder(new Color(0x6F4F28), 1, true));
         return label;
     }
 
@@ -130,7 +158,7 @@ public class TempPrepareDrinkGui extends JFrame {
         gbc = (GridBagConstraints) base.clone();
         gbc.gridx = col;
         gbc.gridy = row + 1;
-        JButton b = new JButton(btnText);
+        JButton b = secondaryButton(btnText);
         b.addActionListener(e -> addIngredient(ing, inc, valSupplier, countLabel));
         grid.add(b, gbc);
     }
@@ -162,18 +190,18 @@ public class TempPrepareDrinkGui extends JFrame {
         receiptGui.getServeNextButton().addActionListener(evt -> {
             receiptGui.setVisible(false);
             receiptGui.dispose();
-            if(cafe.isDayFinished()) {
-                JOptionPane.showMessageDialog(this,
-                        cafe.getDaySummary(),
-                        "Day Complete",
-                        JOptionPane.INFORMATION_MESSAGE);
-                cafe.startNextDay();
+            if (cafe.isDayFinished()) {
+                DayCompleteOverlay.show(this, cafe.getDaySummary(), () -> {
+                    cafe.startNextDay();
+                    showDayIntroAndSpawn();
+                });
+            } else {
+                order = cafe.spawnCustomer();
+                resetCounts();
+                updateContent();
+                // re-pack to ensure layout fits after text changes
+                pack();
             }
-            order = cafe.spawnCustomer();
-            resetCounts();
-            updateContent();
-            // re-pack to ensure layout fits after text changes
-            pack();
         });
     }
 
@@ -189,12 +217,29 @@ public class TempPrepareDrinkGui extends JFrame {
         dialog.setLayout(new BorderLayout(12, 12));
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        JLabel inventoryLabel = new JLabel(html(cafe.getBarista().checkInventory(cafe.getInventory())));
-        inventoryLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        dialog.add(inventoryLabel, BorderLayout.CENTER);
+        BackgroundPanel bg = new BackgroundPanel("src/Images/Menu.png");
+        bg.setLayout(new BorderLayout(0, 14));
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        JButton restockButton = new JButton("Restock Inventory");
+        JPanel overlay = new JPanel(new BorderLayout(0, 12));
+        overlay.setOpaque(false);
+        overlay.setBorder(new EmptyBorder(14, 14, 14, 14));
+        bg.add(overlay, BorderLayout.CENTER);
+
+        JPanel card = new JPanel(new BorderLayout(0, 12));
+        card.setOpaque(true);
+        card.setBackground(new Color(parchment.getRed(), parchment.getGreen(), parchment.getBlue(), 220));
+        card.setBorder(new CompoundBorder(new LineBorder(wood, 2, true), new EmptyBorder(12, 12, 12, 12)));
+        overlay.add(card, BorderLayout.CENTER);
+
+        JLabel inventoryLabel = new JLabel(html(cafe.getBarista().checkInventory(cafe.getInventory())));
+        inventoryLabel.setFont(new Font("Bahnschrift", Font.PLAIN, 14));
+        inventoryLabel.setForeground(new Color(0x2E3138));
+        inventoryLabel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        card.add(inventoryLabel, BorderLayout.CENTER);
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttons.setOpaque(false);
+        JButton restockButton = primaryButton("Restock Inventory");
         restockButton.addActionListener(evt -> {
             String report = cafe.getBarista().restockInventory(cafe.getInventory());
             inventoryLabel.setText(html(report));
@@ -202,13 +247,14 @@ public class TempPrepareDrinkGui extends JFrame {
             dialog.pack();
         });
 
-        JButton backButton = new JButton("Back to Customer");
+        JButton backButton = secondaryButton("Back to Customer");
         backButton.addActionListener(evt -> dialog.dispose());
 
         buttons.add(restockButton);
         buttons.add(backButton);
-        dialog.add(buttons, BorderLayout.SOUTH);
+        card.add(buttons, BorderLayout.SOUTH);
 
+        dialog.setContentPane(bg);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -239,6 +285,42 @@ public class TempPrepareDrinkGui extends JFrame {
         syrupCount.setText(Integer.toString(syrupAmnt));
         pack();
         repaint();
+    }
+
+    private void showDayIntroAndSpawn() {
+        DayStartOverlay.show(this, cafe.getCurrentDay(), () -> {
+            order = cafe.spawnCustomer();
+            resetCounts();
+            updateContent();
+            pack();
+        });
+    }
+
+    private JLabel accentLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+        label.setForeground(new Color(0x2E3138));
+        return label;
+    }
+
+    private JButton baseButton(String text, Color bg, Color border, Color fg) {
+        JButton b = new JButton(text);
+        b.setFocusPainted(false);
+        b.setBackground(bg);
+        b.setForeground(fg);
+        b.setOpaque(true);
+        b.setBorder(new CompoundBorder(new LineBorder(border, 2, true), new EmptyBorder(6, 12, 6, 12)));
+        b.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return b;
+    }
+
+    private JButton primaryButton(String text) {
+        return baseButton(text, new Color(0x2E6F73), new Color(0x214E52), Color.WHITE);
+    }
+
+    private JButton secondaryButton(String text) {
+        return baseButton(text, new Color(0xF1E5C8), new Color(0x6F4F28), new Color(0x3B2F2F));
     }
 
     private String html(String text) {

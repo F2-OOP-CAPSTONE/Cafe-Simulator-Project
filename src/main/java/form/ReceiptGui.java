@@ -1,15 +1,22 @@
 package form;
 
 import CoffeeShop.Order;
+import UI.BackgroundPanel;
 import drinks.Drink;
 import entities.Customer;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class ReceiptGui extends JFrame {
-    private final JButton serveNextButton = new JButton("Serve Next");
+    private final Color wood = new Color(0x6F4F28);
+    private final Color parchment = new Color(0xF8F1E0);
+    private final Color teal = new Color(0x2E6F73);
+
+    private final JButton serveNextButton = primaryButton("Serve Next");
 
     public ReceiptGui(Order order) {
         setTitle("Receipt");
@@ -20,9 +27,20 @@ public class ReceiptGui extends JFrame {
     }
 
     private void buildUi(Order order) {
-        JPanel root = new JPanel();
-        root.setLayout(new BoxLayout(root, BoxLayout.Y_AXIS));
-        root.setBorder(new EmptyBorder(12, 12, 12, 12));
+        BackgroundPanel root = new BackgroundPanel("src/Images/Menu.png");
+        root.setLayout(new BorderLayout(0, 12));
+
+        JPanel overlay = new JPanel(new BorderLayout());
+        overlay.setOpaque(false);
+        overlay.setBorder(new EmptyBorder(16, 16, 16, 16));
+        root.add(overlay, BorderLayout.CENTER);
+
+        JPanel card = new JPanel();
+        card.setOpaque(true);
+        card.setBackground(new Color(parchment.getRed(), parchment.getGreen(), parchment.getBlue(), 220));
+        card.setBorder(new CompoundBorder(new LineBorder(wood, 3, true), new EmptyBorder(16, 16, 16, 16)));
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        overlay.add(card, BorderLayout.CENTER);
 
         Drink drink = order.getServedDrink();
 
@@ -33,23 +51,43 @@ public class ReceiptGui extends JFrame {
         String reaction = wanted.equalsIgnoreCase(got) ? cust.getHappyReaction() : cust.getSadReaction();
         int tip = cust.reactToDrink(drink, wanted);
 
-        root.add(label("Order ID: " + order.getID()));
-        root.add(label("Customer: " + cust.getName()));
-        root.add(label("Item: " + drink.getFullName()));
-        root.add(label(String.format("Price: %.2f", order.getPrice())));
-        root.add(label("Calories: " + drink.getCalorie()));
-        root.add(label(tip > 0 ? "Tip: " + tip : "No tip received"));
-        root.add(label(reaction));
-        root.add(Box.createVerticalStrut(10));
-        root.add(serveNextButton);
+        card.add(accentLabel("Order ID: " + order.getID()));
+        card.add(accentLabel("Customer: " + cust.getName()));
+        card.add(accentLabel("Item: " + drink.getFullName()));
+        card.add(accentLabel(String.format("Price: %.2f", order.getPrice())));
+        card.add(accentLabel("Calories: " + drink.getCalorie()));
+        card.add(accentLabel(tip > 0 ? "Tip: " + tip : "No tip received"));
+        card.add(accentLabel(reaction));
+        card.add(Box.createVerticalStrut(12));
+        serveNextButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        card.add(serveNextButton);
 
         setContentPane(root);
     }
 
-    private JLabel label(String text) {
+    private JLabel accentLabel(String text) {
         JLabel l = new JLabel(text);
         l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        l.setFont(new Font("Bahnschrift", Font.BOLD, 15));
+        l.setForeground(new Color(0x2E3138));
+        l.setBorder(new EmptyBorder(2, 0, 2, 0));
         return l;
+    }
+
+    private JButton baseButton(String text, Color bg, Color border, Color fg) {
+        JButton b = new JButton(text);
+        b.setFocusPainted(false);
+        b.setBackground(bg);
+        b.setForeground(fg);
+        b.setOpaque(true);
+        b.setBorder(new CompoundBorder(new LineBorder(border, 2, true), new EmptyBorder(6, 12, 6, 12)));
+        b.setFont(new Font("Bahnschrift", Font.BOLD, 14));
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return b;
+    }
+
+    private JButton primaryButton(String text) {
+        return baseButton(text, teal, new Color(0x214E52), Color.WHITE);
     }
 
     public JButton getServeNextButton() {
