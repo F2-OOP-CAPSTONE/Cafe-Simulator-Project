@@ -6,6 +6,7 @@ import UI.BackgroundPanel;
 import form.DayStartOverlay;
 import form.DayCompleteOverlay;
 import drinks.Ingredients;
+import drinks.DrinkSize;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -18,6 +19,7 @@ public class TempPrepareDrinkGui extends JFrame {
     private final CoffeeShop cafe;
     private Order order;
     private ReceiptGui receiptGui;
+    private final GameTransitionListener listener;
 
     private final Color wood = new Color(0x6F4F28);
     private final Color parchment = new Color(0xF8F1E0);
@@ -41,7 +43,7 @@ public class TempPrepareDrinkGui extends JFrame {
     private int chocoAmnt = 0;
     private int syrupAmnt = 0;
 
-    public TempPrepareDrinkGui(CoffeeShop cafe) {
+    public TempPrepareDrinkGui(CoffeeShop cafe, GameTransitionListener listener) {
         this.cafe = cafe;
         buildUi();
         setTitle("Coffee Prep");
@@ -50,6 +52,8 @@ public class TempPrepareDrinkGui extends JFrame {
         pack();
         setLocationRelativeTo(null);
         updateContent();
+
+        this.listener = listener;
     }
 
     private void buildUi() {
@@ -193,6 +197,10 @@ public class TempPrepareDrinkGui extends JFrame {
         receiptGui.getServeNextButton().addActionListener(evt -> {
             receiptGui.dispose();
             if (cafe.isDayFinished()) {
+                if (cafe.isBankrupt()) {
+                    showGameOverScreen();
+                    return;
+                }
                 DayCompleteOverlay.show(this, cafe.getDaySummary(), () -> {
                     cafe.startNextDay();
                     showDayIntroAndSpawn();
@@ -205,6 +213,37 @@ public class TempPrepareDrinkGui extends JFrame {
                 pack();
             }
         });
+    }
+
+    private void showGameOverScreen() {
+        JDialog gameOverDialog = new JDialog(this, "Game Over", true);
+        gameOverDialog.setLayout(new BorderLayout(15, 15));
+        gameOverDialog.setPreferredSize(new Dimension(380, 220));
+        gameOverDialog.getContentPane().setBackground(new Color(parchment.getRed(), parchment.getGreen(), parchment.getBlue(), 230));
+
+        JLabel message = new JLabel("<html><center><h1>GAME OVER</h1>" +
+                "You went bankrupt!<br>" +
+                "Final Balance: $" + String.format("%.2f", cafe.getCurrentBalance()) +
+                "<center></html>", SwingConstants.CENTER);
+        message.setForeground(new Color(0x2E3138));
+        message.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+
+        JButton backButton = primaryButton("Return to Main Menu");
+        backButton.addActionListener(e -> {
+            gameOverDialog.dispose();
+            listener.returnToMainMenu();
+            this.dispose();
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(backButton);
+
+        gameOverDialog.add(message, BorderLayout.CENTER);
+        gameOverDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        gameOverDialog.pack();
+        gameOverDialog.setLocationRelativeTo(null);
+        gameOverDialog.setVisible(true);
     }
 
     private void onReset(ActionEvent e) {

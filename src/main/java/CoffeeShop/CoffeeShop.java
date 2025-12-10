@@ -180,6 +180,10 @@ public class CoffeeShop {
         else System.out.println("Invalid Action");
     }
 
+    public boolean isBankrupt() {
+        return currentBalance < 0;
+    }
+
 
     public Barista getBarista() {return barista;}
     public LinkedList<Order> getOrders() {return orders;}

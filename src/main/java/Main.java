@@ -33,7 +33,10 @@ public class Main {
         CoffeeShop cafe = new CoffeeShop("Java Jolt");
         Order firstOrder = cafe.spawnCustomer();
 
-        TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe);
+        TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe, () -> {
+            SwingUtilities.invokeLater(Main::showMainMenu);
+        });
+
         if (firstOrder != null) {
             gui.SetOrder(firstOrder);
         }
