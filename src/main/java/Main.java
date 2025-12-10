@@ -2,6 +2,7 @@ import CoffeeShop.CoffeeShop;
 import CoffeeShop.Order;
 import UI.UI;
 import form.TempPrepareDrinkGui;
+import form.DayStartOverlay;
 
 import javax.swing.SwingUtilities;
 
@@ -37,5 +38,6 @@ public class Main {
             gui.SetOrder(firstOrder);
         }
         gui.setVisible(true);
+        DayStartOverlay.show(gui, cafe.getCurrentDay(), null);
     }
 }

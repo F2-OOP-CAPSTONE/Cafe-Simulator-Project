@@ -76,6 +76,10 @@ public class CoffeeShop {
         System.out.println(">>Starting Day " + currentDay);
     }
 
+    public int getCurrentDay() {
+        return currentDay;
+    }
+
     public String getDaySummary() {
         return "<html><center><h2>Day " + currentDay + " Complete!</h2>" +
                 "Customers Served Today: " + customerServedToday + "<br>" +
