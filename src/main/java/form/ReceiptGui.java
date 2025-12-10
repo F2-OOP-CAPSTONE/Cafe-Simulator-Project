@@ -18,6 +18,7 @@ public class ReceiptGui extends JFrame {
     private final Color ink = new Color(0x2F2A28);
     private final Color accent = new Color(0xB44F3A);
     private final Color shadow = new Color(0, 0, 0, 40);
+    private final int receiptWidth = 500;
 
     private final Font bodyFont = new Font("Bahnschrift", Font.PLAIN, 15);
 
@@ -77,9 +78,9 @@ public class ReceiptGui extends JFrame {
         sub.setBorder(new EmptyBorder(2, 0, 10, 0));
         content.add(sub);
 
-        content.add(line("Order #", "#" + order.getID(), true));
-        content.add(line("Drink", drink.getFullName(), true));
-        content.add(line("Calories", drink.getCalorie() + " cal", false));
+        content.add(line("Order", "#" + order.getID(), true));
+        content.add(line("Drink", wrap(drink.getFullName(), 260), true));
+        content.add(line("Calories", wrap(drink.getCalorie() + " cal", 200), false));
 
         content.add(divider());
         content.add(line("Price", String.format("$%.2f", order.getPrice()), true));
@@ -87,7 +88,7 @@ public class ReceiptGui extends JFrame {
         content.add(line("Total", String.format("$%.2f", total), true));
 
         content.add(divider());
-        content.add(reactionLabel(reaction, tip > 0));
+        content.add(reactionLabel(wrap(reaction, 420), tip > 0));
 
         content.add(Box.createVerticalStrut(12));
         JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -99,6 +100,11 @@ public class ReceiptGui extends JFrame {
 
         paperSheet.add(content);
         paperSheet.add(cutEdge(false));
+
+        Dimension sheetSize = paperSheet.getPreferredSize();
+        paperSheet.setPreferredSize(new Dimension(receiptWidth, sheetSize.height));
+        paperSheet.setMaximumSize(new Dimension(receiptWidth, Integer.MAX_VALUE));
+        paperSheet.setMinimumSize(new Dimension(receiptWidth, 0));
 
         paperStack.add(paperSheet, BorderLayout.CENTER);
 
@@ -121,6 +127,7 @@ public class ReceiptGui extends JFrame {
         JLabel right = new JLabel(value);
         right.setForeground(ink);
         right.setFont(bold ? bodyFont.deriveFont(Font.BOLD) : bodyFont);
+        right.setMaximumSize(new Dimension(320, Integer.MAX_VALUE));
 
         row.add(left);
         row.add(Box.createHorizontalStrut(12));
@@ -202,5 +209,9 @@ public class ReceiptGui extends JFrame {
 
     public JButton getServeNextButton() {
         return serveNextButton;
+    }
+
+    private String wrap(String text, int widthPx) {
+        return "<html><div style='width:" + widthPx + "px'>" + text + "</div></html>";
     }
 }
