@@ -142,7 +142,7 @@ public class TempPrepareDrinkGui extends JFrame {
         label.setFont(new Font("Bahnschrift", Font.BOLD, 14));
         label.setOpaque(true);
         label.setBackground(new Color(0xF1E5C8));
-        label.setForeground(new Color(0x4A3422));
+        label.setForeground(new Color(0x1E4BBE));
         label.setBorder(new LineBorder(new Color(0x6F4F28), 1, true));
         return label;
     }
