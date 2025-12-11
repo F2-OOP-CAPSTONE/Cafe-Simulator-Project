@@ -1,8 +1,8 @@
 package entities.types;
 
-import entities.*;
-import drinks.*;
-
+import entities.Customer;
+import drinks.Drink;
+import drinks.DrinkSize;
 import java.util.Random;
 
 public class RichCustomer extends Customer {
@@ -25,17 +25,34 @@ public class RichCustomer extends Customer {
 
     public RichCustomer(String name) {
         this.name = name + " (VIP)";
-//        this.patience = 35;
+        this.maxPatience = 30;
+        this.patience = maxPatience;
+
+        int roll = random.nextInt(100);
+        if (roll < 80) this.preferredSize = DrinkSize.LARGE;
+        else this.preferredSize = DrinkSize.MEDIUM;
 
         this.dialogue = QUOTES[random.nextInt(QUOTES.length)];
     }
 
     public  int reactToDrink(Drink drink, String wanted) {
         if (drink.getName().equalsIgnoreCase(wanted)) {
-            Random random = new Random();
-            return random.nextInt(((100 - 50) + 1) + 50);
+            return 50;
         } else {
             return 0;
+        }
+    }
+
+    public String orderDrink() {
+        int index = random.nextInt(100);
+        if(index < 50){
+            return "Cappuccino";
+        } else if (index < 75){
+            return "Americano";
+        } else if (index < 90){
+            return "Latte";
+        } else {
+            return "Mocha";
         }
     }
 

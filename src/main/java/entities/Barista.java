@@ -12,7 +12,7 @@ public class Barista {
         this.totalTips = 0;
     }
 
-    public void serveOrder(Order order, Drink drink) {
+    public double serveOrder(Order order, Drink drink) {
         order.completeOrder(drink);
 
         String wanted = order.getDrinkName();
@@ -32,8 +32,10 @@ public class Barista {
             if(tip > 0) {
                 System.out.println("Received Tip: Php" + tip);
                 totalTips += tip;
+                return tip;
             } else {
                 System.out.println("No tip received");
+                return 0;
         }
     }
 

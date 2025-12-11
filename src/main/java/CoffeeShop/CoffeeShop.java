@@ -24,11 +24,12 @@ public class CoffeeShop {
     private double currentBalance = 100.00;
     private double dailyTax = 10.00;
     private final double TAX_INCREASE = 5.00;
+    private int fame = 0;
 
     // New Variables: Day Cycle
     private int currentDay = 1;
     private int customerServedToday = 0;
-    private final int CUSTOMER_PER_DAY = 5;
+    private int CUSTOMER_PER_DAY = 5;
 
     public CoffeeShop(String name) {
         this.name = name;
@@ -44,6 +45,23 @@ public class CoffeeShop {
         }
     }
 
+    public boolean performAction(int patienceCost) {
+        if (!orders.isEmpty()) {
+            Order current = orders.getFirst();
+            Customer c = current.getCustomer();
+
+            c.reducePatience(patienceCost);
+
+            if (c.isPatienceZero()) {
+                System.out.println(">>> CUSTOMER LEFT ANGRY! (Patience ran out");
+                fame -= 10;
+                manageOrder("Deqeue", current);
+                return false;
+            }
+        }
+        return true;
+    }
+
     // -- GAME LOOP --
     public Order spawnCustomer() {
         Customer customer = CustomerGeneration.spawnRandomCustomer();
@@ -53,8 +71,9 @@ public class CoffeeShop {
     }
 
     public boolean addIngredient(Ingredients ing) {
-        int currentStock = Inventory.getOrDefault(ing, 0);
+        if (!performAction(2)) return false;
 
+        int currentStock = Inventory.getOrDefault(ing, 0);
         if (currentStock > 0) {
             Inventory.put(ing, currentStock - 1);
 
@@ -82,8 +101,29 @@ public class CoffeeShop {
 
         Order currentOrder = orders.getFirst();
 
+        Ingredients requiredCup = getCupEnum(size);
+        if(Inventory.getOrDefault(requiredCup, 0) <= 0){
+            System.out.println("NO CUPS! Order Failed.");
+            fame -= 20;
+            manageOrder("Dequeue", currentOrder);
+            return null;
+        }
+        Inventory.put(requiredCup, Inventory.getOrDefault(requiredCup, -1));
+
         Drink finalDrink = mixingGlass.finishDrink(size);
-        barista.serveOrder(currentOrder, finalDrink);
+
+        currentOrder.setPrice(finalDrink.getPrice());
+
+        double tipRecieved = barista.serveOrder(currentOrder, finalDrink);
+
+        boolean correctDrink = currentOrder.getDrinkName().equals(finalDrink.getName());
+        boolean correctSize = currentOrder.getRequestedSize() == size;
+
+        if (correctDrink && correctSize) {
+            fame += 5;
+        } else {
+            fame -= 10;
+        }
 
         String receiptTxt = Receipt.printReceipt(currentOrder);
         System.out.println(receiptTxt);
@@ -92,7 +132,9 @@ public class CoffeeShop {
             double price = currentOrder.getPrice();
 
             if (price > 0) {
-                currentBalance += price;
+                int patienceBonus = currentOrder.getCustomer().getPatience() / 5;
+
+                currentBalance += (price + patienceBonus);
                 salesReport.addSale(price);
             }
 
@@ -102,6 +144,15 @@ public class CoffeeShop {
             manageOrder("Dequeue", currentOrder);
         }
         return currentOrder;
+    }
+
+    private Ingredients getCupEnum(DrinkSize size) {
+        switch (size) {
+            case SMALL: return Ingredients.CUP_SMALl;
+            case MEDIUM: return Ingredients.CUP_MEDIUM;
+            case LARGE: return Ingredients.CUP_LARGE;
+            default: return Ingredients.CUP_MEDIUM;
+        }
     }
 
     public String restockInventory() {
@@ -130,6 +181,8 @@ public class CoffeeShop {
 
         currentBalance -= dailyTax;
         dailyTax += TAX_INCREASE;
+
+        this.CUSTOMER_PER_DAY += 1 + (fame / 10);
 
         currentDay++;
         customerServedToday = 0;
