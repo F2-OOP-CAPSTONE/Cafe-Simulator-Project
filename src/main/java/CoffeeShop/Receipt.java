@@ -11,18 +11,21 @@ public class Receipt {
         sb.append("Order ID: #").append(order.getID()).append("\n");
         sb.append("Customer: ").append(order.getCustomer().getName()).append("\n");
         sb.append("-----------------------------\n");
-        
-        if(drink != null) {
+
+        if(drink != null && order.getPrice() > 0) {
             sb.append("Item:        ").append(drink.getFullName()).append("\n");
-            sb.append("Price:       Php").append(String.format("%.2f", order.getPrice())).append("\n");
+            sb.append(String.format("Price:       Php%.2f\n", order.getPrice()));
+            sb.append(String.format("Tip:         Php%.2f\n", order.getTip())); // Shows Tip
+            sb.append("-----------------------------\n");
+            sb.append(String.format("TOTAL:       Php%.2f\n", order.getTotalCost())); // Shows Total
             sb.append("Calories:    ").append(drink.getCalorie()).append(" kcal\n");
         } else {
-            sb.append("Item:        [Order Failed]\n");
-            sb.append("Price:       Php0.00\n");
+            // Failed Order
+            sb.append("Item:        ").append(drink != null ? drink.getFullName() : "[Unknown]").append("\n");
+            sb.append("Status:      [REFUSED TO PAY]\n");
+            sb.append("Total:       Php0.00\n");
         }
 
-        sb.append("----------------------------\n");
-        sb.append("Status:      ").append(order.getStatus()).append("\n");
         sb.append("============================\n");
 
         return sb.toString();

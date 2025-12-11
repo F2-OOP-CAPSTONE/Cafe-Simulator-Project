@@ -33,16 +33,14 @@ public class ReceiptGui extends JFrame {
     }
 
     private void buildUi(Order order) {
-        Drink drink = order.getServedDrink();
-
-        String wanted = order.getDrinkName();
-        String got = drink.getName();
+        Drink servedDrink = order.getServedDrink();
+        Drink drinkInfo = servedDrink != null ? servedDrink : order.getOrderedDrink();
         Customer cust = order.getCustomer();
 
-        String reaction = wanted.equalsIgnoreCase(got) ? cust.getHappyReaction() : cust.getSadReaction();
-        int tip = cust.reactToDrink(drink, wanted);
-
-        double total = order.getPrice() + tip;
+        boolean paid = order.getPrice() > 0;
+        String reaction = paid ? cust.getHappyReaction() : cust.getSadReaction();
+        double tip = order.getTip();
+        double total = order.getTotalCost();
 
         BackgroundPanel root = new BackgroundPanel("src/Images/Menu.png");
         root.setLayout(new GridBagLayout());
@@ -79,16 +77,23 @@ public class ReceiptGui extends JFrame {
         content.add(sub);
 
         content.add(line("Order", "#" + order.getID(), true));
-        content.add(line("Drink", wrap(drink.getFullName(), 260), true));
-        content.add(line("Calories", wrap(drink.getCalorie() + " cal", 200), false));
+        content.add(line("Drink", wrap(drinkInfo != null ? drinkInfo.getFullName() : "Unknown", 260), true));
+        if (drinkInfo != null) {
+            content.add(line("Calories", wrap(drinkInfo.getCalorie() + " cal", 200), false));
+        }
 
         content.add(divider());
-        content.add(line("Price", String.format("$%.2f", order.getPrice()), true));
-        content.add(line("Tip", tip > 0 ? "$" + tip : "-", false));
-        content.add(line("Total", String.format("$%.2f", total), true));
+        if (paid && drinkInfo != null) {
+            content.add(line("Price", String.format("Php%.2f", order.getPrice()), true));
+            content.add(line("Tip", tip > 0 ? "Php" + tip : "-", false));
+            content.add(line("Total", String.format("Php%.2f", total), true));
+        } else {
+            content.add(line("Status", "[REFUSED TO PAY]", true));
+            content.add(line("Total", "Php0.00", true));
+        }
 
         content.add(divider());
-        content.add(reactionLabel(wrap(reaction, 420), tip > 0));
+        content.add(reactionLabel(wrap(reaction, 420), paid && tip > 0));
 
         content.add(Box.createVerticalStrut(12));
         JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -114,6 +119,7 @@ public class ReceiptGui extends JFrame {
         setContentPane(root);
     }
 
+<<<<<<< HEAD
     private JPanel line(String label, String value, boolean bold) {
         JPanel row = new JPanel();
         row.setOpaque(false);

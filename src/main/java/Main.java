@@ -31,12 +31,11 @@ public class Main {
 
     private static void launchGame() {
         CoffeeShop cafe = new CoffeeShop("Java Jolt");
-        Order firstOrder = cafe.spawnCustomer();
 
-        TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe);
-        if (firstOrder != null) {
-            gui.SetOrder(firstOrder);
-        }
+        TempPrepareDrinkGui gui = new TempPrepareDrinkGui(cafe, () -> {
+            SwingUtilities.invokeLater(Main::showMainMenu);
+        });
+
         gui.setVisible(true);
         DayStartOverlay.show(gui, cafe.getCurrentDay(), null);
     }
