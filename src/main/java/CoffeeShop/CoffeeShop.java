@@ -114,7 +114,7 @@ public class CoffeeShop {
 
         currentOrder.setPrice(finalDrink.getPrice());
 
-        double tipRecieved = barista.serveOrder(currentOrder, finalDrink);
+        double tipAmount = barista.serveOrder(currentOrder, finalDrink);
 
         boolean correctDrink = currentOrder.getDrinkName().equals(finalDrink.getName());
         boolean correctSize = currentOrder.getRequestedSize() == size;
@@ -125,6 +125,14 @@ public class CoffeeShop {
             fame -= 10;
         }
 
+        double totalTip = tipAmount;
+        if (currentOrder.getPrice() > 0) {
+            double patienceBonus = currentOrder.getCustomer().getPatience() / 5;
+            totalTip += patienceBonus;
+        }
+
+        currentOrder.setTip(totalTip);
+
         String receiptTxt = Receipt.printReceipt(currentOrder);
         System.out.println(receiptTxt);
 
@@ -132,9 +140,8 @@ public class CoffeeShop {
             double price = currentOrder.getPrice();
 
             if (price > 0) {
-                int patienceBonus = currentOrder.getCustomer().getPatience() / 5;
-
-                currentBalance += (price + patienceBonus);
+                currentBalance += price;
+                currentBalance += tipAmount;
                 salesReport.addSale(price);
             }
 
@@ -182,7 +189,12 @@ public class CoffeeShop {
         currentBalance -= dailyTax;
         dailyTax += TAX_INCREASE;
 
-        this.CUSTOMER_PER_DAY += 1 + (fame / 10);
+        int newLimit = 4 + (fame / 10);
+        this.CUSTOMER_PER_DAY = Math.min(newLimit, 15);
+
+        if (this.CUSTOMER_PER_DAY < 1) {
+            this.CUSTOMER_PER_DAY = 1;
+        }
 
         currentDay++;
         customerServedToday = 0;

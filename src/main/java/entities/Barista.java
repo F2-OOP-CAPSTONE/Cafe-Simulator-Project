@@ -28,14 +28,20 @@ public class Barista {
             order.setPrice(0.0);
         }
 
-        int tip = cust.reactToDrink(drink, wanted);
-            if(tip > 0) {
-                System.out.println("Received Tip: Php" + tip);
-                totalTips += tip;
-                return tip;
-            } else {
-                System.out.println("No tip received");
-                return 0;
+        double tip = cust.reactToDrink(drink, wanted);
+
+        if (order.getPrice() >= 0) {
+            int patienceBonus = cust.getPatience() / 5;
+            tip += patienceBonus;
+        }
+
+        if(tip > 0) {
+            System.out.println("Received Tip: Php" + String.format("%.2f", tip));
+            totalTips += tip;
+            return tip;
+        } else {
+            System.out.println("No tip received");
+            return 0.0;
         }
     }
 

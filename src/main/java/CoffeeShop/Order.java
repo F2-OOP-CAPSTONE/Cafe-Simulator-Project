@@ -13,6 +13,7 @@ public class Order {
     private Drink servedDrink;
     private String Status;                  // Pending,Brewing,Done?
     private final DrinkSize requestedSize;
+    private double tip;
 
     public Order(int ID, Customer customer){
         this.Status = "Pending";
@@ -51,6 +52,9 @@ public class Order {
     public String getDrinkName() { return drinkName; }
     public Drink getServedDrink()  { return servedDrink; }
     public DrinkSize getRequestedSize() { return requestedSize; }
+    public double getTip() { return tip; }
+    public double getTotalCost() { return price + tip; }
 
+    public void setTip(double tip) { this.tip = tip; }
 
 }
