@@ -3,6 +3,7 @@ package entities.types;
 import entities.Customer;
 import drinks.Drink;
 import drinks.DrinkSize;
+import drinks.DrinkType;
 import java.util.Random;
 
 public class RegularCustomer extends Customer {
@@ -36,17 +37,19 @@ public class RegularCustomer extends Customer {
         this.dialogue = QUOTES[index];
     }
 
-    public String orderDrink(){
+    public Drink orderDrink(){
         int index = random.nextInt(100);
+        DrinkType type;
         if(index < 50){
-            return "Latte";
+            type = DrinkType.LATTE;
         } else if (index < 75){
-            return "Cappuccino";
+            type = DrinkType.CAPPUCCINO;
         } else if (index < 90){
-            return "Americano";
+            type = DrinkType.AMERICANO;
         } else {
-            return "Mocha";
+            type = DrinkType.MOCHA;
         }
+        return new Drink(type, preferredSize);
     }
 
     public int reactToDrink(Drink drink, String wanted) {

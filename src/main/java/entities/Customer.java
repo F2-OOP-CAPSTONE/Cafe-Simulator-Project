@@ -13,7 +13,7 @@ public abstract class Customer {
 
     protected Random random = new Random();
 
-    public abstract String orderDrink();
+    public abstract Drink orderDrink();
     public abstract int reactToDrink(Drink drink, String wanted);
     public abstract String getHappyReaction();
     public abstract String getSadReaction();

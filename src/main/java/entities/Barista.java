@@ -2,14 +2,52 @@ package entities;
 
 import CoffeeShop.Order;
 import drinks.Drink;
+import drinks.Ingredients;
+import mechanics.MixingGlass;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Barista {
     private String name;
     private double totalTips;
+    private MixingGlass mixingGlass;
+    private final Map<Ingredients, Integer> pendingIngredientUsage = new HashMap<>();
 
     public Barista(String name) {
         this.name = name;
         this.totalTips = 0;
+    }
+
+    public void setMixingGlass(MixingGlass mixingGlass) {
+        this.mixingGlass = mixingGlass;
+    }
+
+    public boolean addIngredient(Ingredients ing, Map<?, Integer> inventory) {
+        if (inventory == null) {
+            return false;
+        }
+        if (inventory.containsKey(ing)) {
+            return consumeIngredient(ing, inventory, ing);
+        }
+        if (inventory.containsKey(ing.name())) {
+            return consumeIngredient(ing, inventory, ing.name());
+        }
+        return false;
+    }
+
+    public void resetIngredients(Map<?, Integer> inventory) {
+        if (inventory == null) {
+            return;
+        }
+        for (Map.Entry<Ingredients, Integer> entry : pendingIngredientUsage.entrySet()) {
+            Object key = inventory.containsKey(entry.getKey()) ? entry.getKey() : entry.getKey().name();
+            @SuppressWarnings("unchecked")
+            Map<Object, Integer> typedInventory = (Map<Object, Integer>) inventory;
+            int current = typedInventory.getOrDefault(key, 0);
+            typedInventory.put(key, current + entry.getValue());
+        }
+        pendingIngredientUsage.clear();
     }
 
     public double serveOrder(Order order, Drink drink) {
@@ -43,6 +81,24 @@ public class Barista {
             System.out.println("No tip received");
             return 0.0;
         }
+    }
+
+    private <K> boolean consumeIngredient(Ingredients ing, Map<?, Integer> inventory, K key) {
+        @SuppressWarnings("unchecked")
+        Map<K, Integer> typedInventory = (Map<K, Integer>) inventory;
+
+        Integer currentStock = typedInventory.get(key);
+        if (currentStock == null || currentStock <= 0) {
+            return false;
+        }
+
+        typedInventory.put(key, currentStock - 1);
+        pendingIngredientUsage.put(ing, pendingIngredientUsage.getOrDefault(ing, 0) + 1);
+
+        if (mixingGlass != null) {
+            mixingGlass.addIngredient(ing);
+        }
+        return true;
     }
 
     public double getTotalTips() { return  totalTips; }

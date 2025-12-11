@@ -2,13 +2,13 @@ package CoffeeShop;
 
 import drinks.Drink;
 import drinks.DrinkSize;
-import drinks.DrinkType;
 import entities.Customer;
 
 public class Order {
     private final int ID;
     private double price;
     private final Customer customer;
+    private final Drink orderedDrink;
     private final String drinkName;
     private Drink servedDrink;
     private String Status;                  // Pending,Brewing,Done?
@@ -19,8 +19,9 @@ public class Order {
         this.Status = "Pending";
         this.ID = ID;
         this.customer = customer;
-        this.drinkName = customer.orderDrink();
-        this.requestedSize = customer.getPreferredSize();
+        this.orderedDrink = customer.orderDrink();
+        this.drinkName = orderedDrink.getName();
+        this.requestedSize = orderedDrink.getSize();
     }
 
     // ACTIONS
@@ -30,12 +31,7 @@ public class Order {
     }
 
     public Drink getOrderedDrink() {
-        for (DrinkType type : DrinkType.values()) {
-            if (type.getName().equalsIgnoreCase(drinkName)) {
-                return new Drink(type, requestedSize);
-            }
-        }
-        return  null;
+        return orderedDrink;
     }
 
     public void setPrice(double price) {

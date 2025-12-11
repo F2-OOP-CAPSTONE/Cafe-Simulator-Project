@@ -36,8 +36,9 @@ public class CoffeeShop {
         this.orders = new LinkedList<>();
         this.salesReport = new SalesReport();
 
-        this.barista = new Barista(setBarista());
         this.mixingGlass = new MixingGlass();
+        this.barista = new Barista(setBarista());
+        this.barista.setMixingGlass(mixingGlass);
 
         this.Inventory = new HashMap<>();
         for (Ingredients ing : Ingredients.values()) {
@@ -88,12 +89,13 @@ public class CoffeeShop {
 
     public void resetMixingGlass() {
         this.mixingGlass = new MixingGlass();
+        this.barista.setMixingGlass(mixingGlass);
         System.out.println("mixing Glass Emptied (Ingredients Wasted)");
     }
 
-    // Convenience overload for existing callers
     public Order serveDrink() {
-        return serveDrink(DrinkSize.MEDIUM);
+        if (orders.isEmpty()) { return null; }
+        return serveDrink(orders.getFirst().getRequestedSize());
     }
 
     public Order serveDrink(DrinkSize size) {
@@ -108,7 +110,7 @@ public class CoffeeShop {
             manageOrder("Dequeue", currentOrder);
             return null;
         }
-        Inventory.put(requiredCup, Inventory.getOrDefault(requiredCup, -1));
+        Inventory.put(requiredCup, Inventory.getOrDefault(requiredCup, 0) - 1);
 
         Drink finalDrink = mixingGlass.finishDrink(size);
 
@@ -254,10 +256,8 @@ public class CoffeeShop {
     public LinkedList<Order> getOrders() {return orders;}
     public HashMap<Ingredients, Integer> getInventory() { return Inventory; }
     public double getCurrentBalance() { return currentBalance; }
-    public int getFame() { return fame; }
     public int getCustomersServedToday() { return customerServedToday; }
     public int getCustomersPerDay() { return CUSTOMER_PER_DAY; }
-    public int getCurrentDay() { return currentDay; }
     public double getDailyTax() { return dailyTax; }
     public int getFame() { return fame; }
 
