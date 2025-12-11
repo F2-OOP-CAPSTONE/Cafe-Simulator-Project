@@ -1,13 +1,21 @@
 # Cafe-Simulator-Project
 
-A friendly desktop cafe simulator where customers line up, you mix drinks in a simple UI, and receipts/sales grow as you serve them.
+A friendly desktop cafe simulator with a day/night loop, fame system, and inventory pressure where customers line up, you mix drinks in a simple UI, and receipts/sales grow as you serve them.
 
 Features
 
-- Mix coffee, milk, water, sugar, chocolate, and syrup to match recipes or experiment.
-- Watch different customer types (regular, student, rich, karen) queue, chat, and order.
-- See prices adjust if a drink doesn’t match the recipe, then view receipts and daily totals.
-- Light JUnit checks keep the barista and drink logic behaving.
+- Fame now swings based on your service: correct drink + size grants +5 fame, wrong size/drink -10, running out of cups -20, and letting patience hit zero -10. Fame also scales your daily customer cap (min 1, max 15).
+- Day cycle with taxes and risk: serve through the quota to trigger a day-end overlay, pay rising taxes, and continue until you either profit or go bankrupt (bankruptcy shows a game-over modal).
+- Ingredient + cup inventory: every ingredient and cup size is tracked; each button press consumes stock and patience. Restock all items for a flat $5 to add 10 units apiece.
+- Customers: regular, student, rich, and karen visitors arrive with different patience/dialogue, tip differently, and react to bad orders by refusing to pay.
+- UI helpers: a shop status dashboard shows fame rank, balance, taxes, day progress, and overlays mark day start/completion. Receipts include price + tip breakdowns.
+- Mixing: build drinks by selecting cup size then adding coffee, milk, water, sugar, chocolate, and syrup to match recipes or experiment.
+
+Gameplay loop
+
+- Pick a cup size, assemble the drink with the ingredient buttons (each costs 2 patience), and serve.
+- Check inventory/restock from the prep screen; monitor patience/fame in the header; open Shop Stats anytime.
+- Finish the daily customer quota to pay taxes and roll into the next day; avoid negative balance to keep playing.
 
 Install / run
 
