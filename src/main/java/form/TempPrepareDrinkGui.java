@@ -62,7 +62,7 @@ public class TempPrepareDrinkGui extends JFrame {
     }
 
     private void buildUi() {
-        BackgroundPanel root = new BackgroundPanel("src/Images/Menu.png");
+        BackgroundPanel root = new BackgroundPanel("src/Images/CustomerIntro.png");
         root.setLayout(new BorderLayout(0, 14));
         root.setPreferredSize(new Dimension(960, 540));
 
@@ -126,33 +126,42 @@ public class TempPrepareDrinkGui extends JFrame {
     }
 
     private JPanel buildSizeSelectionPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel();
         panel.setOpaque(false);
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(10, 12, 10, 12);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(Box.createVerticalGlue());
 
         JLabel instruction = accentLabel("Select Cup Size");
         instruction.setFont(instruction.getFont().deriveFont(Font.BOLD, 18f));
-        c.gridx = 0; c.gridy = 0; c.gridwidth = 3;
-        panel.add(instruction, c);
+        instruction.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(instruction);
+        panel.add(Box.createVerticalStrut(16));
 
-        c.gridwidth = 1;
-        c.gridy = 1;
+        Dimension cupBtnSize = new Dimension(140, 42);
+
+        JPanel sizeRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 0));
+        sizeRow.setOpaque(false);
         JButton btnSmall = secondaryButton("Small Cup");
+        btnSmall.setPreferredSize(cupBtnSize);
         btnSmall.addActionListener(e -> selectSize(DrinkSize.SMALL));
-        c.gridx = 0; panel.add(btnSmall, c);
-
-        JButton btnMedium = primaryButton("Medium Cup");
+        JButton btnMedium = secondaryButton("Medium Cup");
+        btnMedium.setPreferredSize(cupBtnSize);
         btnMedium.addActionListener(e -> selectSize(DrinkSize.MEDIUM));
-        c.gridx = 1; panel.add(btnMedium, c);
-
         JButton btnLarge = secondaryButton("Large Cup");
+        btnLarge.setPreferredSize(cupBtnSize);
         btnLarge.addActionListener(e -> selectSize(DrinkSize.LARGE));
-        c.gridx = 2; panel.add(btnLarge, c);
 
-        c.gridx = 0; c.gridy = 2; c.gridwidth = 3;
-        panel.add(buildUtilityPanel(), c);
+        sizeRow.add(btnSmall);
+        sizeRow.add(btnMedium);
+        sizeRow.add(btnLarge);
+        panel.add(sizeRow);
+
+        panel.add(Box.createVerticalStrut(18));
+        JPanel utility = buildUtilityPanel();
+        utility.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(utility);
+        panel.add(Box.createVerticalGlue());
 
         return panel;
     }
@@ -188,7 +197,7 @@ public class TempPrepareDrinkGui extends JFrame {
         JPanel bottomBox = new JPanel();
         bottomBox.setOpaque(false);
         bottomBox.setLayout(new BoxLayout(bottomBox, BoxLayout.Y_AXIS));
-        bottomBox.setBorder(new EmptyBorder(10, 0, 0, 0));
+        bottomBox.setBorder(new EmptyBorder(16, 0, 0, 0));
 
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
         buttonRow.setOpaque(false);
@@ -211,7 +220,7 @@ public class TempPrepareDrinkGui extends JFrame {
         buttonRow.add(serveButton);
 
         bottomBox.add(buttonRow);
-        bottomBox.add(Box.createVerticalStrut(8));
+        bottomBox.add(Box.createVerticalStrut(22));
         bottomBox.add(buildUtilityPanel());
 
         panel.add(bottomBox, BorderLayout.SOUTH);
@@ -222,8 +231,9 @@ public class TempPrepareDrinkGui extends JFrame {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         p.setOpaque(false);
 
-        JButton statusBtn = secondaryButton("Shop Stats");
+        JButton statusBtn = primaryButton("Shop Stats");
         statusBtn.addActionListener(e -> new ShopStatusGui(cafe).setVisible(true));
+        statusBtn.setPreferredSize(new Dimension(140, 42));
 
         p.add(statusBtn);
         return p;
@@ -231,7 +241,7 @@ public class TempPrepareDrinkGui extends JFrame {
 
     private void selectSize(DrinkSize size) {
         this.selectedSize = size;
-        cardLayout.show(mainContainer, "PREP_SCREEN");
+        showScreen("PREP_SCREEN");
     }
 
     private void onServe() {
@@ -270,7 +280,7 @@ public class TempPrepareDrinkGui extends JFrame {
         order = cafe.spawnCustomer();
         resetCounts();
         selectedSize = null;
-        cardLayout.show(mainContainer, "SIZE_SCREEN");
+        showScreen("SIZE_SCREEN");
         updateContent();
     }
 
@@ -351,7 +361,7 @@ public class TempPrepareDrinkGui extends JFrame {
         cafe.resetMixingGlass();
         resetCounts();
         selectedSize = null;
-        cardLayout.show(mainContainer, "SIZE_SCREEN");
+        showScreen("SIZE_SCREEN");
         updateContent();
     }
 
@@ -360,7 +370,7 @@ public class TempPrepareDrinkGui extends JFrame {
         dialog.setLayout(new BorderLayout(12, 12));
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        BackgroundPanel bg = new BackgroundPanel("src/Images/Menu.png");
+        BackgroundPanel bg = new BackgroundPanel("src/Images/CustomerIntro.png");
         bg.setLayout(new BorderLayout(0, 14));
 
         JPanel overlay = new JPanel(new BorderLayout(0, 12));
@@ -430,6 +440,12 @@ public class TempPrepareDrinkGui extends JFrame {
         syrupCount.setText(Integer.toString(syrupAmnt));
 
         repaint();
+    }
+
+    private void showScreen(String name) {
+        cardLayout.show(mainContainer, name);
+        mainContainer.revalidate();
+        mainContainer.repaint();
     }
 
     private JLabel accentLabel(String text) {

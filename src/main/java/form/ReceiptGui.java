@@ -42,7 +42,7 @@ public class ReceiptGui extends JFrame {
         double tip = order.getTip();
         double total = order.getTotalCost();
 
-        BackgroundPanel root = new BackgroundPanel("src/Images/Menu.png");
+        BackgroundPanel root = new BackgroundPanel("src/Images/CustomerIntro.png");
         root.setLayout(new GridBagLayout());
 
         JPanel paperStack = new JPanel(new BorderLayout());
@@ -119,7 +119,6 @@ public class ReceiptGui extends JFrame {
         setContentPane(root);
     }
 
-<<<<<<< HEAD
     private JPanel line(String label, String value, boolean bold) {
         JPanel row = new JPanel();
         row.setOpaque(false);

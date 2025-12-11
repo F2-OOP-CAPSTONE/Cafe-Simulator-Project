@@ -104,4 +104,19 @@ public class Barista {
     public double getTotalTips() { return  totalTips; }
     public String getName() { return name; }
 
+    /**
+     * Returns a newline-separated inventory summary for UI display.
+     */
+    public String checkInventory(HashMap<Ingredients, Integer> inventory) {
+        if (inventory == null || inventory.isEmpty()) {
+            return "Inventory unavailable.";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Current Inventory:\n");
+        for (Ingredients ing : Ingredients.values()) {
+            int amount = inventory.getOrDefault(ing, 0);
+            sb.append(ing.getName()).append(": ").append(amount).append("\n");
+        }
+        return sb.toString();
+    }
 }
