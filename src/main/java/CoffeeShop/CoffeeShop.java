@@ -155,7 +155,7 @@ public class CoffeeShop {
 
     private Ingredients getCupEnum(DrinkSize size) {
         switch (size) {
-            case SMALL: return Ingredients.CUP_SMALl;
+            case SMALL: return Ingredients.CUP_SMALL;
             case MEDIUM: return Ingredients.CUP_MEDIUM;
             case LARGE: return Ingredients.CUP_LARGE;
             default: return Ingredients.CUP_MEDIUM;
@@ -254,6 +254,13 @@ public class CoffeeShop {
     public LinkedList<Order> getOrders() {return orders;}
     public HashMap<Ingredients, Integer> getInventory() { return Inventory; }
     public double getCurrentBalance() { return currentBalance; }
+    public int getFame() { return fame; }
+    public int getCustomersServedToday() { return customerServedToday; }
+    public int getCustomersPerDay() { return CUSTOMER_PER_DAY; }
+    public int getCurrentDay() { return currentDay; }
+    public double getDailyTax() { return dailyTax; }
+    public int getFame() { return fame; }
+
 
     private String setBarista(){
         String[] NAMES = {

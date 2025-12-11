@@ -3,10 +3,8 @@ package form;
 import CoffeeShop.CoffeeShop;
 import CoffeeShop.Order;
 import UI.BackgroundPanel;
-import form.DayStartOverlay;
-import form.DayCompleteOverlay;
-import drinks.Ingredients;
 import drinks.DrinkSize;
+import drinks.Ingredients;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -24,36 +22,43 @@ public class TempPrepareDrinkGui extends JFrame {
     private final Color wood = new Color(0x6F4F28);
     private final Color parchment = new Color(0xF8F1E0);
 
+    // Layout helpers
+    private final CardLayout cardLayout = new CardLayout();
+    private JPanel mainContainer;
+
+    // Labels
     private JLabel customerInfoLabel;
     private JLabel customerMsgLabel;
     private JLabel orderLabel;
+    private JLabel patienceLabel;
+    private JLabel fameLabel;
+
+    // Ingredient counters
     private JLabel coffeeCount;
     private JLabel milkCount;
     private JLabel waterCount;
     private JLabel sugarCount;
     private JLabel chocoCount;
     private JLabel syrupCount;
-    private JButton confirmButton;
-    private JButton recipeButton;
 
-    private int coffeeAmnt = 0;
-    private int milkAmnt = 0;
-    private int waterAmnt = 0;
-    private int sugarAmnt = 0;
-    private int chocoAmnt = 0;
-    private int syrupAmnt = 0;
+    private DrinkSize selectedSize;
+    private int coffeeAmnt = 0, milkAmnt = 0, waterAmnt = 0;
+    private int sugarAmnt = 0, chocoAmnt = 0, syrupAmnt = 0;
 
     public TempPrepareDrinkGui(CoffeeShop cafe, GameTransitionListener listener) {
         this.cafe = cafe;
-        buildUi();
-        setTitle("Coffee Prep");
+        this.listener = listener;
+
+        setTitle("Coffee Prep Station");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+
+        buildUi();
+
         pack();
         setLocationRelativeTo(null);
-        updateContent();
 
-        this.listener = listener;
+        checkDayCycle();
     }
 
     private void buildUi() {
@@ -66,34 +71,103 @@ public class TempPrepareDrinkGui extends JFrame {
         overlay.setBorder(new EmptyBorder(18, 18, 18, 18));
         root.add(overlay, BorderLayout.CENTER);
 
-        JPanel card = new JPanel(new BorderLayout(0, 14));
+        JPanel card = new JPanel(new BorderLayout(0, 12));
         card.setOpaque(true);
         card.setBackground(new Color(parchment.getRed(), parchment.getGreen(), parchment.getBlue(), 210));
         card.setBorder(new CompoundBorder(
                 new LineBorder(wood, 3, true),
-                new EmptyBorder(18, 18, 18, 18)
+                new EmptyBorder(12, 12, 12, 12)
         ));
         overlay.add(card, BorderLayout.CENTER);
 
-        // Customer info (left-aligned, multi-line friendly via HTML)
+        card.add(buildTopHeader(), BorderLayout.NORTH);
+
+        mainContainer = new JPanel(cardLayout);
+        mainContainer.setOpaque(false);
+        mainContainer.add(buildSizeSelectionPanel(), "SIZE_SCREEN");
+        mainContainer.add(buildPreparationPanel(), "PREP_SCREEN");
+        card.add(mainContainer, BorderLayout.CENTER);
+
+        setContentPane(root);
+    }
+
+    private JPanel buildTopHeader() {
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(new EmptyBorder(0, 4, 8, 4));
+
         JPanel info = new JPanel();
         info.setOpaque(false);
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        info.setAlignmentX(Component.LEFT_ALIGNMENT);
-        customerInfoLabel = accentLabel("NEW CUSTOMER:");
+
+        customerInfoLabel = accentLabel("CUSTOMER:");
         customerMsgLabel = accentLabel("");
         orderLabel = accentLabel("ORDER:");
-        customerInfoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        customerMsgLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        orderLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         info.add(customerInfoLabel);
         info.add(Box.createVerticalStrut(4));
         info.add(customerMsgLabel);
         info.add(Box.createVerticalStrut(4));
         info.add(orderLabel);
-        card.add(info, BorderLayout.NORTH);
 
-        // Ingredient controls laid out in a stable GridBag to prevent overflow
+        JPanel infoRight = new JPanel();
+        infoRight.setOpaque(false);
+        infoRight.setLayout(new BoxLayout(infoRight, BoxLayout.Y_AXIS));
+        patienceLabel = accentLabel("Patience: -");
+        patienceLabel.setForeground(new Color(0xB44F3A));
+        fameLabel = accentLabel("Fame: -");
+        infoRight.add(patienceLabel);
+        infoRight.add(Box.createVerticalStrut(4));
+        infoRight.add(fameLabel);
+
+        topPanel.add(info, BorderLayout.CENTER);
+        topPanel.add(infoRight, BorderLayout.EAST);
+        return topPanel;
+    }
+
+    private JPanel buildSizeSelectionPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(10, 12, 10, 12);
+        c.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel instruction = accentLabel("Select Cup Size");
+        instruction.setFont(instruction.getFont().deriveFont(Font.BOLD, 18f));
+        c.gridx = 0; c.gridy = 0; c.gridwidth = 3;
+        panel.add(instruction, c);
+
+        c.gridwidth = 1;
+        c.gridy = 1;
+        JButton btnSmall = secondaryButton("Small Cup");
+        btnSmall.addActionListener(e -> selectSize(DrinkSize.SMALL));
+        c.gridx = 0; panel.add(btnSmall, c);
+
+        JButton btnMedium = primaryButton("Medium Cup");
+        btnMedium.addActionListener(e -> selectSize(DrinkSize.MEDIUM));
+        c.gridx = 1; panel.add(btnMedium, c);
+
+        JButton btnLarge = secondaryButton("Large Cup");
+        btnLarge.addActionListener(e -> selectSize(DrinkSize.LARGE));
+        c.gridx = 2; panel.add(btnLarge, c);
+
+        c.gridx = 0; c.gridy = 2; c.gridwidth = 3;
+        panel.add(buildUtilityPanel(), c);
+
+        return panel;
+    }
+
+    private JPanel buildPreparationPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        JPanel grid = new JPanel(new GridBagLayout());
+        grid.setOpaque(false);
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(6, 12, 6, 12);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0;
+
         coffeeCount = centeredLabel("0");
         milkCount = centeredLabel("0");
         waterCount = centeredLabel("0");
@@ -101,48 +175,103 @@ public class TempPrepareDrinkGui extends JFrame {
         chocoCount = centeredLabel("0");
         syrupCount = centeredLabel("0");
 
-        JPanel grid = new JPanel(new GridBagLayout());
-        grid.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 12, 6, 12);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
+        addCountAndButton(grid, c, 0, 0, coffeeCount, "Coffee", Ingredients.COFFEE, () -> coffeeAmnt++, () -> coffeeAmnt);
+        addCountAndButton(grid, c, 1, 0, milkCount, "Milk", Ingredients.MILK, () -> milkAmnt++, () -> milkAmnt);
+        addCountAndButton(grid, c, 2, 0, waterCount, "Water", Ingredients.WATER, () -> waterAmnt++, () -> waterAmnt);
 
-        addCountAndButton(grid, gbc, 0, 0, coffeeCount, "Coffee", Ingredients.COFFEE, () -> coffeeAmnt++, () -> coffeeAmnt);
-        addCountAndButton(grid, gbc, 1, 0, milkCount, "Milk", Ingredients.MILK, () -> milkAmnt++, () -> milkAmnt);
-        addCountAndButton(grid, gbc, 2, 0, waterCount, "Water", Ingredients.WATER, () -> waterAmnt++, () -> waterAmnt);
+        addCountAndButton(grid, c, 0, 2, sugarCount, "Sugar", Ingredients.SUGAR, () -> sugarAmnt++, () -> sugarAmnt);
+        addCountAndButton(grid, c, 1, 2, chocoCount, "Chocolate", Ingredients.CHOCOLATE, () -> chocoAmnt++, () -> chocoAmnt);
+        addCountAndButton(grid, c, 2, 2, syrupCount, "Syrup", Ingredients.SYRUP, () -> syrupAmnt++, () -> syrupAmnt);
 
-        addCountAndButton(grid, gbc, 0, 2, sugarCount, "Sugar", Ingredients.SUGAR, () -> sugarAmnt++, () -> sugarAmnt);
-        addCountAndButton(grid, gbc, 1, 2, chocoCount, "Chocolate", Ingredients.CHOCOLATE, () -> chocoAmnt++, () -> chocoAmnt);
-        addCountAndButton(grid, gbc, 2, 2, syrupCount, "Syrup", Ingredients.SYRUP, () -> syrupAmnt++, () -> syrupAmnt);
+        panel.add(grid, BorderLayout.CENTER);
 
-        // Confirm + Reset row
-        confirmButton = primaryButton("Serve Drink");
-        confirmButton.addActionListener(this::onConfirm);
-        JButton resetButton = secondaryButton("Reset");
-        resetButton.addActionListener(this::onReset);
-        JButton checkInventoryButton = secondaryButton("Check Inventory");
+        JPanel bottomBox = new JPanel();
+        bottomBox.setOpaque(false);
+        bottomBox.setLayout(new BoxLayout(bottomBox, BoxLayout.Y_AXIS));
+        bottomBox.setBorder(new EmptyBorder(10, 0, 0, 0));
+
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        buttonRow.setOpaque(false);
+
+        JButton checkInventoryButton = secondaryButton("Inventory");
         checkInventoryButton.addActionListener(this::onCheckInventory);
 
-        recipeButton = secondaryButton("Recipes");
-        recipeButton.addActionListener(e -> {
-            new Recipe().setVisible(true);
-        });
+        JButton resetButton = secondaryButton("Reset");
+        resetButton.addActionListener(this::onReset);
 
-        gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        gbc.anchor = GridBagConstraints.CENTER;
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
-        buttons.setOpaque(false);
-        buttons.add(checkInventoryButton);
-        buttons.add(resetButton);
-        buttons.add(recipeButton);
-        buttons.add(confirmButton);
-        grid.add(buttons, gbc);
+        JButton recipeButton = secondaryButton("Recipes");
+        recipeButton.addActionListener(e -> new Recipe().setVisible(true));
 
-        card.add(grid, BorderLayout.CENTER);
-        setContentPane(root);
+        JButton serveButton = primaryButton("Serve Drink");
+        serveButton.addActionListener(e -> onServe());
+
+        buttonRow.add(checkInventoryButton);
+        buttonRow.add(resetButton);
+        buttonRow.add(recipeButton);
+        buttonRow.add(serveButton);
+
+        bottomBox.add(buttonRow);
+        bottomBox.add(Box.createVerticalStrut(8));
+        bottomBox.add(buildUtilityPanel());
+
+        panel.add(bottomBox, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    private JPanel buildUtilityPanel() {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        p.setOpaque(false);
+
+        JButton statusBtn = secondaryButton("Shop Stats");
+        statusBtn.addActionListener(e -> new ShopStatusGui(cafe).setVisible(true));
+
+        p.add(statusBtn);
+        return p;
+    }
+
+    private void selectSize(DrinkSize size) {
+        this.selectedSize = size;
+        cardLayout.show(mainContainer, "PREP_SCREEN");
+    }
+
+    private void onServe() {
+        if (order == null || selectedSize == null) return;
+
+        Order resultOrder = cafe.serveDrink(selectedSize);
+        if (resultOrder != null) {
+            receiptGui = new ReceiptGui(resultOrder);
+            receiptGui.setVisible(true);
+
+            receiptGui.getServeNextButton().addActionListener(evt -> {
+                receiptGui.dispose();
+                checkDayCycle();
+            });
+        } else {
+            checkDayCycle();
+        }
+    }
+
+    private void checkDayCycle() {
+        if (cafe.isDayFinished()) {
+            if (cafe.isBankrupt()) {
+                showGameOverScreen();
+                return;
+            }
+            DayCompleteOverlay.show(this, cafe.getDaySummary(), () -> {
+                cafe.startNextDay();
+                startNextCustomer();
+            });
+        } else {
+            startNextCustomer();
+        }
+    }
+
+    private void startNextCustomer() {
+        order = cafe.spawnCustomer();
+        resetCounts();
+        selectedSize = null;
+        cardLayout.show(mainContainer, "SIZE_SCREEN");
+        updateContent();
     }
 
     private void addIngredient(Ingredients ing, Runnable increment, java.util.function.IntSupplier valueSup, JLabel label) {
@@ -150,9 +279,15 @@ public class TempPrepareDrinkGui extends JFrame {
         if (added) {
             increment.run();
             label.setText(Integer.toString(valueSup.getAsInt()));
+            if (order != null) {
+                patienceLabel.setText("Patience: " + order.getCustomer().getPatience());
+            }
             repaint();
         } else {
-            JOptionPane.showMessageDialog(this, "Cannot add more " + ing.name() + " (out of stock).", "Inventory", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cannot add more " + ing.name() + " (out of stock/Time up).", "Inventory", JOptionPane.WARNING_MESSAGE);
+            if (order != null && order.getCustomer().isPatienceZero()) {
+                checkDayCycle();
+            }
         }
     }
 
@@ -174,45 +309,10 @@ public class TempPrepareDrinkGui extends JFrame {
         gbc.gridx = col;
         gbc.gridy = row;
         grid.add(countLabel, gbc);
-
-        gbc = (GridBagConstraints) base.clone();
-        gbc.gridx = col;
         gbc.gridy = row + 1;
         JButton b = secondaryButton(btnText);
         b.addActionListener(e -> addIngredient(ing, inc, valSupplier, countLabel));
         grid.add(b, gbc);
-    }
-
-    private void onConfirm(ActionEvent e) {
-        if (order == null) return;
-
-        // Default to Medium size for now since we don't have UI buttons for size yet
-        cafe.serveDrink(DrinkSize.MEDIUM);
-
-        confirmButton.setEnabled(false);
-        receiptGui = new ReceiptGui(order);
-        receiptGui.setVisible(true);
-
-        //-- Updated Day Cycle Logic --
-        receiptGui.getServeNextButton().addActionListener(evt -> {
-            receiptGui.dispose();
-            if (cafe.isDayFinished()) {
-                if (cafe.isBankrupt()) {
-                    showGameOverScreen();
-                    return;
-                }
-                DayCompleteOverlay.show(this, cafe.getDaySummary(), () -> {
-                    cafe.startNextDay();
-                    showDayIntroAndSpawn();
-                });
-            } else {
-                order = cafe.spawnCustomer();
-                resetCounts();
-                updateContent();
-                // re-pack to ensure layout fits after text changes
-                pack();
-            }
-        });
     }
 
     private void showGameOverScreen() {
@@ -236,6 +336,7 @@ public class TempPrepareDrinkGui extends JFrame {
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
         buttonPanel.add(backButton);
 
         gameOverDialog.add(message, BorderLayout.CENTER);
@@ -249,8 +350,9 @@ public class TempPrepareDrinkGui extends JFrame {
     private void onReset(ActionEvent e) {
         cafe.resetMixingGlass();
         resetCounts();
+        selectedSize = null;
+        cardLayout.show(mainContainer, "SIZE_SCREEN");
         updateContent();
-        pack();
     }
 
     private void onCheckInventory(ActionEvent e) {
@@ -306,36 +408,28 @@ public class TempPrepareDrinkGui extends JFrame {
         coffeeAmnt = milkAmnt = waterAmnt = sugarAmnt = chocoAmnt = syrupAmnt = 0;
     }
 
-    void updateContent() {
+    private void updateContent() {
         if (order != null) {
-            customerInfoLabel.setText("NEW CUSTOMER: " + order.getCustomer().getName());
+            customerInfoLabel.setText("CUSTOMER: " + order.getCustomer().getName());
             customerMsgLabel.setText(html(order.getCustomer().getDialogue()));
-            orderLabel.setText("ORDER: " + order.getDrinkName());
+            orderLabel.setText("ORDER: " + order.getRequestedSize() + " " + order.getDrinkName());
+
+            patienceLabel.setText("Patience: " + order.getCustomer().getPatience());
+            fameLabel.setText("Fame: " + cafe.getFame());
         } else {
             customerInfoLabel.setText("Waiting for customer...");
             customerMsgLabel.setText("");
             orderLabel.setText("");
         }
-        if (confirmButton != null) {
-            confirmButton.setEnabled(order != null);
-        }
+
         coffeeCount.setText(Integer.toString(coffeeAmnt));
         milkCount.setText(Integer.toString(milkAmnt));
         waterCount.setText(Integer.toString(waterAmnt));
         sugarCount.setText(Integer.toString(sugarAmnt));
         chocoCount.setText(Integer.toString(chocoAmnt));
         syrupCount.setText(Integer.toString(syrupAmnt));
-        pack();
-        repaint();
-    }
 
-    private void showDayIntroAndSpawn() {
-        DayStartOverlay.show(this, cafe.getCurrentDay(), () -> {
-            order = cafe.spawnCustomer();
-            resetCounts();
-            updateContent();
-            pack();
-        });
+        repaint();
     }
 
     private JLabel accentLabel(String text) {

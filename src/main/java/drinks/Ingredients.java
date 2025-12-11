@@ -7,7 +7,7 @@ public enum Ingredients {
     SUGAR("Sugar"), CHOCOLATE("Chocolate"), SYRUP("Syrup"),
     CARAMEL("Caramel"),
 
-    CUP_SMALl("Small Cup"),
+    CUP_SMALL("Small Cup"),
     CUP_MEDIUM("Medium Cup"),
     CUP_LARGE("Large Cup");
 
