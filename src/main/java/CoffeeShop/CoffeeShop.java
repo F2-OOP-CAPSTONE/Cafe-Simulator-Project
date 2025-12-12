@@ -56,7 +56,10 @@ public class CoffeeShop {
             if (c.isPatienceZero()) {
                 System.out.println(">>> CUSTOMER LEFT ANGRY! (Patience ran out");
                 fame -= 10;
-                manageOrder("Deqeue", current);
+                // Drop the current order so a new customer can be served instead of repeatedly penalizing fame
+                manageOrder("Dequeue", current);
+                // Clear any half-built drink so the next customer doesn't inherit bad ingredients
+                resetMixingGlass();
                 return false;
             }
         }
